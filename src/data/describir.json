@@ -1,0 +1,73 @@
+[
+  { "tema": "pentateuco", "nivel": "peques", "palabra": "Noé", "prohibidas": [] },
+  { "tema": "pentateuco", "nivel": "peques", "palabra": "Arcoíris", "prohibidas": [] },
+  { "tema": "pentateuco", "nivel": "peques", "palabra": "Moisés", "prohibidas": [] },
+  { "tema": "pentateuco", "nivel": "peques", "palabra": "Serpiente", "prohibidas": [] },
+  { "tema": "pentateuco", "nivel": "peques", "palabra": "Paloma", "prohibidas": [] },
+
+  { "tema": "pentateuco", "nivel": "media", "palabra": "Arca", "prohibidas": ["barco", "Noé", "animales"] },
+  { "tema": "pentateuco", "nivel": "media", "palabra": "Maná", "prohibidas": ["pan", "cielo", "desierto"] },
+  { "tema": "pentateuco", "nivel": "media", "palabra": "Diez Mandamientos", "prohibidas": ["tablas", "Moisés", "leyes"] },
+  { "tema": "pentateuco", "nivel": "media", "palabra": "Abraham", "prohibidas": ["Isaac", "Sara", "padre"] },
+  { "tema": "pentateuco", "nivel": "media", "palabra": "Plagas", "prohibidas": ["Egipto", "faraón", "diez"] },
+
+  { "tema": "pentateuco", "nivel": "experta", "palabra": "Tabernáculo", "prohibidas": ["tienda", "desierto", "Moisés", "templo"] },
+  { "tema": "pentateuco", "nivel": "experta", "palabra": "Pascua", "prohibidas": ["cordero", "sangre", "Egipto", "puerta"] },
+  { "tema": "pentateuco", "nivel": "experta", "palabra": "Babel", "prohibidas": ["torre", "idiomas", "cielo", "ladrillos"] },
+  { "tema": "pentateuco", "nivel": "experta", "palabra": "José", "prohibidas": ["túnica", "hermanos", "Egipto", "sueños"] },
+  { "tema": "pentateuco", "nivel": "experta", "palabra": "Sábado", "prohibidas": ["descanso", "séptimo", "día", "trabajo"] },
+
+  { "tema": "historicos", "nivel": "peques", "palabra": "David", "prohibidas": [] },
+  { "tema": "historicos", "nivel": "peques", "palabra": "Gigante", "prohibidas": [] },
+  { "tema": "historicos", "nivel": "peques", "palabra": "Rey", "prohibidas": [] },
+  { "tema": "historicos", "nivel": "peques", "palabra": "Trompeta", "prohibidas": [] },
+  { "tema": "historicos", "nivel": "peques", "palabra": "Sansón", "prohibidas": [] },
+
+  { "tema": "historicos", "nivel": "media", "palabra": "Goliat", "prohibidas": ["gigante", "David", "piedra"] },
+  { "tema": "historicos", "nivel": "media", "palabra": "Salomón", "prohibidas": ["sabio", "rey", "templo"] },
+  { "tema": "historicos", "nivel": "media", "palabra": "Jericó", "prohibidas": ["murallas", "trompetas", "Josué"] },
+  { "tema": "historicos", "nivel": "media", "palabra": "Elías", "prohibidas": ["profeta", "fuego", "cuervos"] },
+  { "tema": "historicos", "nivel": "media", "palabra": "Ester", "prohibidas": ["reina", "rey", "judíos"] },
+
+  { "tema": "historicos", "nivel": "experta", "palabra": "Rut", "prohibidas": ["Noemí", "Booz", "espigas", "moabita"] },
+  { "tema": "historicos", "nivel": "experta", "palabra": "Gedeón", "prohibidas": ["vellón", "trescientos", "madianitas", "juez"] },
+  { "tema": "historicos", "nivel": "experta", "palabra": "Templo", "prohibidas": ["Salomón", "Jerusalén", "casa", "Dios"] },
+  { "tema": "historicos", "nivel": "experta", "palabra": "Naamán", "prohibidas": ["lepra", "Jordán", "siete", "Eliseo"] },
+  { "tema": "historicos", "nivel": "experta", "palabra": "Saúl", "prohibidas": ["rey", "primero", "David", "lanza"] },
+
+  { "tema": "profetas", "nivel": "peques", "palabra": "Jonás", "prohibidas": [] },
+  { "tema": "profetas", "nivel": "peques", "palabra": "León", "prohibidas": [] },
+  { "tema": "profetas", "nivel": "peques", "palabra": "Pastor", "prohibidas": [] },
+  { "tema": "profetas", "nivel": "peques", "palabra": "Pez", "prohibidas": [] },
+  { "tema": "profetas", "nivel": "peques", "palabra": "Daniel", "prohibidas": [] },
+
+  { "tema": "profetas", "nivel": "media", "palabra": "Daniel", "prohibidas": ["leones", "foso", "rey"] },
+  { "tema": "profetas", "nivel": "media", "palabra": "Jonás", "prohibidas": ["pez", "Nínive", "ballena"] },
+  { "tema": "profetas", "nivel": "media", "palabra": "Salmos", "prohibidas": ["canciones", "David", "libro"] },
+  { "tema": "profetas", "nivel": "media", "palabra": "Job", "prohibidas": ["paciencia", "sufrir", "enfermo"] },
+  { "tema": "profetas", "nivel": "media", "palabra": "Sabiduría", "prohibidas": ["Salomón", "saber", "Proverbios"] },
+
+  { "tema": "profetas", "nivel": "experta", "palabra": "Nínive", "prohibidas": ["Jonás", "ciudad", "arrepentirse", "pez"] },
+  { "tema": "profetas", "nivel": "experta", "palabra": "Isaías", "prohibidas": ["profeta", "Mesías", "carbón", "libro"] },
+  { "tema": "profetas", "nivel": "experta", "palabra": "Proverbios", "prohibidas": ["Salomón", "sabiduría", "refranes", "libro"] },
+  { "tema": "profetas", "nivel": "experta", "palabra": "Babilonia", "prohibidas": ["Daniel", "Nabucodonosor", "exilio", "ciudad"] },
+  { "tema": "profetas", "nivel": "experta", "palabra": "Mesías", "prohibidas": ["Jesús", "Cristo", "ungido", "salvador"] },
+
+  { "tema": "nt", "nivel": "peques", "palabra": "Jesús", "prohibidas": [] },
+  { "tema": "nt", "nivel": "peques", "palabra": "Belén", "prohibidas": [] },
+  { "tema": "nt", "nivel": "peques", "palabra": "Pescador", "prohibidas": [] },
+  { "tema": "nt", "nivel": "peques", "palabra": "Ángel", "prohibidas": [] },
+  { "tema": "nt", "nivel": "peques", "palabra": "Navidad", "prohibidas": [] },
+
+  { "tema": "nt", "nivel": "media", "palabra": "Pedro", "prohibidas": ["pescador", "discípulo", "gallo"] },
+  { "tema": "nt", "nivel": "media", "palabra": "Bautismo", "prohibidas": ["agua", "Juan", "río"] },
+  { "tema": "nt", "nivel": "media", "palabra": "Cruz", "prohibidas": ["Jesús", "morir", "madera"] },
+  { "tema": "nt", "nivel": "media", "palabra": "Parábola", "prohibidas": ["historia", "Jesús", "enseñar"] },
+  { "tema": "nt", "nivel": "media", "palabra": "Pentecostés", "prohibidas": ["Espíritu", "lenguas", "fuego"] },
+
+  { "tema": "nt", "nivel": "experta", "palabra": "Apocalipsis", "prohibidas": ["Juan", "último", "libro", "revelación"] },
+  { "tema": "nt", "nivel": "experta", "palabra": "Samaritano", "prohibidas": ["bueno", "camino", "herido", "ayudar"] },
+  { "tema": "nt", "nivel": "experta", "palabra": "Resurrección", "prohibidas": ["tumba", "tercer", "día", "vivo"] },
+  { "tema": "nt", "nivel": "experta", "palabra": "Pablo", "prohibidas": ["Saulo", "cartas", "Damasco", "apóstol"] },
+  { "tema": "nt", "nivel": "experta", "palabra": "Última Cena", "prohibidas": ["pan", "vino", "discípulos", "Jesús"] }
+]

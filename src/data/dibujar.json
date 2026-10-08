@@ -1,0 +1,73 @@
+[
+  { "tema": "pentateuco", "nivel": "peques", "texto": "El arca de Noé", "referencia": "Génesis 6:14" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "La serpiente en el árbol del Edén", "referencia": "Génesis 3:1" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "El arcoíris", "referencia": "Génesis 9:13" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "La zarza que ardía", "referencia": "Éxodo 3:2" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "La paloma con la ramita de olivo", "referencia": "Génesis 8:11" },
+
+  { "tema": "pentateuco", "nivel": "media", "texto": "Las tablas de los Diez Mandamientos", "referencia": "Éxodo 31:18" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "La escalera de Jacob", "referencia": "Génesis 28:12" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "El becerro de oro", "referencia": "Éxodo 32:4" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "El mar Rojo abierto en dos", "referencia": "Éxodo 14:21-22" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "La torre de Babel", "referencia": "Génesis 11:4" },
+
+  { "tema": "pentateuco", "nivel": "experta", "texto": "La serpiente de bronce", "referencia": "Números 21:9" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "La burra de Balaam y el ángel", "referencia": "Números 22:23" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "El carnero enredado en un arbusto", "referencia": "Génesis 22:13" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "La columna de nube y de fuego", "referencia": "Éxodo 13:21" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "Las codornices en el campamento", "referencia": "Éxodo 16:13" },
+
+  { "tema": "historicos", "nivel": "peques", "texto": "Goliat, el gigante", "referencia": "1 Samuel 17:4" },
+  { "tema": "historicos", "nivel": "peques", "texto": "La honda de David", "referencia": "1 Samuel 17:40" },
+  { "tema": "historicos", "nivel": "peques", "texto": "Sansón con el pelo largo", "referencia": "Jueces 16:17" },
+  { "tema": "historicos", "nivel": "peques", "texto": "Las murallas de Jericó cayéndose", "referencia": "Josué 6:20" },
+  { "tema": "historicos", "nivel": "peques", "texto": "Un cuervo llevando pan", "referencia": "1 Reyes 17:6" },
+
+  { "tema": "historicos", "nivel": "media", "texto": "El carro de fuego de Elías", "referencia": "2 Reyes 2:11" },
+  { "tema": "historicos", "nivel": "media", "texto": "El arpa de David", "referencia": "1 Samuel 16:23" },
+  { "tema": "historicos", "nivel": "media", "texto": "Sansón y el león", "referencia": "Jueces 14:5-6" },
+  { "tema": "historicos", "nivel": "media", "texto": "Rut recogiendo espigas", "referencia": "Rut 2:2-3" },
+  { "tema": "historicos", "nivel": "media", "texto": "El templo de Salomón", "referencia": "1 Reyes 6:1" },
+
+  { "tema": "historicos", "nivel": "experta", "texto": "El vellón de lana de Gedeón", "referencia": "Jueces 6:37" },
+  { "tema": "historicos", "nivel": "experta", "texto": "El arca del pacto", "referencia": "1 Samuel 4:3-4" },
+  { "tema": "historicos", "nivel": "experta", "texto": "Los cántaros y las antorchas de Gedeón", "referencia": "Jueces 7:16" },
+  { "tema": "historicos", "nivel": "experta", "texto": "El rey extendiendo el cetro de oro a Ester", "referencia": "Ester 5:2" },
+  { "tema": "historicos", "nivel": "experta", "texto": "La muralla de Jerusalén en obras", "referencia": "Nehemías 4:6" },
+
+  { "tema": "profetas", "nivel": "peques", "texto": "Jonás dentro del pez", "referencia": "Jonás 1:17" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Daniel con los leones", "referencia": "Daniel 6:22" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Un pastor con su oveja", "referencia": "Salmo 23:1" },
+  { "tema": "profetas", "nivel": "peques", "texto": "El horno de fuego", "referencia": "Daniel 3:19" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Una lámpara encendida", "referencia": "Salmo 119:105" },
+
+  { "tema": "profetas", "nivel": "media", "texto": "La planta que dio sombra a Jonás", "referencia": "Jonás 4:6" },
+  { "tema": "profetas", "nivel": "media", "texto": "Una mano escribiendo en la pared", "referencia": "Daniel 5:5" },
+  { "tema": "profetas", "nivel": "media", "texto": "El valle de los huesos secos", "referencia": "Ezequiel 37:1" },
+  { "tema": "profetas", "nivel": "media", "texto": "El lobo y el cordero juntos", "referencia": "Isaías 11:6" },
+  { "tema": "profetas", "nivel": "media", "texto": "Un árbol plantado junto al río", "referencia": "Salmo 1:3" },
+
+  { "tema": "profetas", "nivel": "experta", "texto": "La estatua de oro, plata, bronce, hierro y barro", "referencia": "Daniel 2:31-33" },
+  { "tema": "profetas", "nivel": "experta", "texto": "La olla hirviendo de Jeremías", "referencia": "Jeremías 1:13" },
+  { "tema": "profetas", "nivel": "experta", "texto": "El yugo al cuello de Jeremías", "referencia": "Jeremías 27:2" },
+  { "tema": "profetas", "nivel": "experta", "texto": "Una rueda dentro de otra rueda", "referencia": "Ezequiel 1:16" },
+  { "tema": "profetas", "nivel": "experta", "texto": "La hormiga de Proverbios", "referencia": "Proverbios 6:6" },
+
+  { "tema": "nt", "nivel": "peques", "texto": "El pesebre", "referencia": "Lucas 2:7" },
+  { "tema": "nt", "nivel": "peques", "texto": "La estrella de Belén", "referencia": "Mateo 2:9" },
+  { "tema": "nt", "nivel": "peques", "texto": "Una barca de pescadores", "referencia": "Lucas 5:2" },
+  { "tema": "nt", "nivel": "peques", "texto": "Cinco panes y dos peces", "referencia": "Juan 6:9" },
+  { "tema": "nt", "nivel": "peques", "texto": "La tumba vacía", "referencia": "Lucas 24:2-3" },
+
+  { "tema": "nt", "nivel": "media", "texto": "Zaqueo subido al árbol", "referencia": "Lucas 19:4" },
+  { "tema": "nt", "nivel": "media", "texto": "El buen samaritano", "referencia": "Lucas 10:33-34" },
+  { "tema": "nt", "nivel": "media", "texto": "La oveja perdida", "referencia": "Lucas 15:4" },
+  { "tema": "nt", "nivel": "media", "texto": "Pedro caminando sobre el agua", "referencia": "Mateo 14:29" },
+  { "tema": "nt", "nivel": "media", "texto": "La casa sobre la roca", "referencia": "Mateo 7:24" },
+
+  { "tema": "nt", "nivel": "experta", "texto": "El gallo que cantó", "referencia": "Mateo 26:74" },
+  { "tema": "nt", "nivel": "experta", "texto": "La sábana con animales de la visión de Pedro", "referencia": "Hechos 10:11-12" },
+  { "tema": "nt", "nivel": "experta", "texto": "El naufragio de Pablo", "referencia": "Hechos 27:41" },
+  { "tema": "nt", "nivel": "experta", "texto": "La armadura de Dios", "referencia": "Efesios 6:13-17" },
+  { "tema": "nt", "nivel": "experta", "texto": "El grano de mostaza", "referencia": "Mateo 13:31-32" }
+]

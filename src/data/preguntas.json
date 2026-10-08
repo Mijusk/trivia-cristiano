@@ -1,0 +1,73 @@
+[
+  { "tema": "pentateuco", "nivel": "peques", "pregunta": "¿Quién construyó un arca para salvarse del diluvio?", "respuesta": "Noé", "opciones": ["Moisés", "Noé", "David"], "referencia": "Génesis 6–7" },
+  { "tema": "pentateuco", "nivel": "peques", "pregunta": "¿En cuántos días creó Dios el mundo antes de descansar?", "respuesta": "Seis", "opciones": ["Seis", "Diez", "Tres"], "referencia": "Génesis 1 – 2:2" },
+  { "tema": "pentateuco", "nivel": "peques", "pregunta": "¿Cómo se llamaba la primera mujer?", "respuesta": "Eva", "opciones": ["Sara", "María", "Eva"], "referencia": "Génesis 3:20" },
+  { "tema": "pentateuco", "nivel": "peques", "pregunta": "¿Dónde pusieron al bebé Moisés para esconderlo en el río?", "respuesta": "En una cesta de juncos", "opciones": ["En una barca de pesca", "En una cesta de juncos", "En un barril"], "referencia": "Éxodo 2:3" },
+  { "tema": "pentateuco", "nivel": "peques", "pregunta": "¿Qué puso Dios en el cielo como señal después del diluvio?", "respuesta": "El arcoíris", "opciones": ["El arcoíris", "Una estrella", "La luna llena"], "referencia": "Génesis 9:13" },
+
+  { "tema": "pentateuco", "nivel": "media", "pregunta": "¿Cómo se llamaban los dos primeros hijos de Adán y Eva?", "respuesta": "Caín y Abel", "referencia": "Génesis 4:1-2" },
+  { "tema": "pentateuco", "nivel": "media", "pregunta": "¿Cuántas plagas envió Dios sobre Egipto?", "respuesta": "Diez", "opciones": ["Siete", "Diez", "Doce"], "referencia": "Éxodo 7–12" },
+  { "tema": "pentateuco", "nivel": "media", "pregunta": "¿Cómo se llamaba el alimento que Dios mandaba del cielo en el desierto?", "respuesta": "Maná", "referencia": "Éxodo 16:31" },
+  { "tema": "pentateuco", "nivel": "media", "pregunta": "¿Cómo se llamaba el hermano de Moisés que hablaba por él?", "respuesta": "Aarón", "opciones": ["Josué", "Aarón", "Caleb"], "referencia": "Éxodo 4:14-16" },
+  { "tema": "pentateuco", "nivel": "media", "pregunta": "¿Qué regalo especial le hizo Jacob a su hijo José?", "respuesta": "Una túnica de colores", "referencia": "Génesis 37:3" },
+
+  { "tema": "pentateuco", "nivel": "experta", "pregunta": "¿Qué rey de Salem y sacerdote del Dios Altísimo bendijo a Abram?", "respuesta": "Melquisedec", "referencia": "Génesis 14:18-20" },
+  { "tema": "pentateuco", "nivel": "experta", "pregunta": "¿En qué monte murió Aarón?", "respuesta": "En el monte Hor", "referencia": "Números 20:27-28" },
+  { "tema": "pentateuco", "nivel": "experta", "pregunta": "¿Qué hizo Moisés para que las aguas amargas de Mara se volvieran dulces?", "respuesta": "Echó un árbol (un madero) en el agua", "referencia": "Éxodo 15:23-25" },
+  { "tema": "pentateuco", "nivel": "experta", "pregunta": "¿Qué dos espías animaron al pueblo a entrar en Canaán?", "respuesta": "Josué y Caleb", "referencia": "Números 14:6-9" },
+  { "tema": "pentateuco", "nivel": "experta", "pregunta": "¿Qué dos hijos de Aarón murieron por ofrecer fuego extraño?", "respuesta": "Nadab y Abiú", "referencia": "Levítico 10:1-2" },
+
+  { "tema": "historicos", "nivel": "peques", "pregunta": "¿Qué usó David para vencer a Goliat?", "respuesta": "Una honda y una piedra", "opciones": ["Una espada", "Un arco y flechas", "Una honda y una piedra"], "referencia": "1 Samuel 17:49" },
+  { "tema": "historicos", "nivel": "peques", "pregunta": "¿Qué no podía cortarse Sansón para no perder su fuerza?", "respuesta": "El pelo", "opciones": ["Las uñas", "El pelo", "La barba"], "referencia": "Jueces 16:17" },
+  { "tema": "historicos", "nivel": "peques", "pregunta": "¿Las murallas de qué ciudad se cayeron cuando el pueblo gritó y tocó las trompetas?", "respuesta": "Jericó", "opciones": ["Jericó", "Babilonia", "Nínive"], "referencia": "Josué 6:20" },
+  { "tema": "historicos", "nivel": "peques", "pregunta": "¿Qué pájaros le llevaban comida al profeta Elías?", "respuesta": "Cuervos", "opciones": ["Palomas", "Cuervos", "Águilas"], "referencia": "1 Reyes 17:6" },
+  { "tema": "historicos", "nivel": "peques", "pregunta": "¿Qué instrumento tocaba David para el rey Saúl?", "respuesta": "El arpa", "opciones": ["El tambor", "La trompeta", "El arpa"], "referencia": "1 Samuel 16:23" },
+
+  { "tema": "historicos", "nivel": "media", "pregunta": "¿Quién fue el primer rey de Israel?", "respuesta": "Saúl", "opciones": ["David", "Saúl", "Salomón"], "referencia": "1 Samuel 10:1" },
+  { "tema": "historicos", "nivel": "media", "pregunta": "¿Qué le pidió Salomón a Dios cuando se le apareció en sueños?", "respuesta": "Sabiduría para gobernar", "referencia": "1 Reyes 3:9" },
+  { "tema": "historicos", "nivel": "media", "pregunta": "¿Quién le dijo a Noemí «tu pueblo será mi pueblo, y tu Dios mi Dios»?", "respuesta": "Rut", "opciones": ["Orfa", "Rut", "Ester"], "referencia": "Rut 1:16" },
+  { "tema": "historicos", "nivel": "media", "pregunta": "¿Cómo subió Elías al cielo?", "respuesta": "En un torbellino, con un carro de fuego", "referencia": "2 Reyes 2:11" },
+  { "tema": "historicos", "nivel": "media", "pregunta": "¿Qué reina arriesgó su vida presentándose ante el rey para salvar a su pueblo?", "respuesta": "Ester", "referencia": "Ester 4:16 – 5:2" },
+
+  { "tema": "historicos", "nivel": "experta", "pregunta": "¿Con cuántos hombres venció Gedeón a los madianitas?", "respuesta": "Trescientos", "referencia": "Jueces 7:7" },
+  { "tema": "historicos", "nivel": "experta", "pregunta": "¿Qué profeta confrontó a David por su pecado con Betsabé?", "respuesta": "Natán", "referencia": "2 Samuel 12:1-7" },
+  { "tema": "historicos", "nivel": "experta", "pregunta": "¿Qué general sirio se curó de la lepra bañándose siete veces en el Jordán?", "respuesta": "Naamán", "referencia": "2 Reyes 5:14" },
+  { "tema": "historicos", "nivel": "experta", "pregunta": "¿Quién dirigió la reconstrucción de las murallas de Jerusalén?", "respuesta": "Nehemías", "referencia": "Nehemías 2:17-18" },
+  { "tema": "historicos", "nivel": "experta", "pregunta": "¿Qué profetisa juzgaba a Israel sentada bajo una palmera?", "respuesta": "Débora", "referencia": "Jueces 4:4-5" },
+
+  { "tema": "profetas", "nivel": "peques", "pregunta": "¿Qué animal se tragó a Jonás?", "respuesta": "Un gran pez", "opciones": ["Un león", "Un gran pez", "Un cocodrilo"], "referencia": "Jonás 1:17" },
+  { "tema": "profetas", "nivel": "peques", "pregunta": "¿A qué foso echaron a Daniel?", "respuesta": "Al foso de los leones", "opciones": ["Al foso de las serpientes", "Al foso de los leones", "Al foso de los osos"], "referencia": "Daniel 6:16" },
+  { "tema": "profetas", "nivel": "peques", "pregunta": "Completa: «El Señor es mi pastor, nada me…»", "respuesta": "faltará", "opciones": ["faltará", "asusta", "cansa"], "referencia": "Salmo 23:1" },
+  { "tema": "profetas", "nivel": "peques", "pregunta": "¿Qué hacía Daniel tres veces al día aunque el rey lo había prohibido?", "respuesta": "Orar", "opciones": ["Cantar", "Orar", "Comer"], "referencia": "Daniel 6:10" },
+  { "tema": "profetas", "nivel": "peques", "pregunta": "¿Cuántos amigos de Daniel fueron echados al horno de fuego?", "respuesta": "Tres", "opciones": ["Dos", "Tres", "Siete"], "referencia": "Daniel 3:20-23" },
+
+  { "tema": "profetas", "nivel": "media", "pregunta": "¿Cómo se llamaban los tres jóvenes echados al horno de fuego?", "respuesta": "Sadrac, Mesac y Abed-nego", "referencia": "Daniel 3:20" },
+  { "tema": "profetas", "nivel": "media", "pregunta": "¿A qué ciudad envió Dios a Jonás a predicar?", "respuesta": "Nínive", "opciones": ["Babilonia", "Nínive", "Jerusalén"], "referencia": "Jonás 1:2" },
+  { "tema": "profetas", "nivel": "media", "pregunta": "¿Qué hombre lo perdió todo pero siguió confiando en Dios?", "respuesta": "Job", "referencia": "Job 1:20-22" },
+  { "tema": "profetas", "nivel": "media", "pregunta": "¿Qué rey escribió la mayoría de los Proverbios?", "respuesta": "Salomón", "opciones": ["David", "Salomón", "Ezequías"], "referencia": "Proverbios 1:1" },
+  { "tema": "profetas", "nivel": "media", "pregunta": "¿Qué vio Ezequiel en un valle que volvían a la vida?", "respuesta": "Huesos secos", "referencia": "Ezequiel 37:1-10" },
+
+  { "tema": "profetas", "nivel": "experta", "pregunta": "¿Qué profeta se casó con Gomer como señal para Israel?", "respuesta": "Oseas", "referencia": "Oseas 1:2-3" },
+  { "tema": "profetas", "nivel": "experta", "pregunta": "¿Cuántos salmos tiene el libro de los Salmos?", "respuesta": "150", "referencia": "Salmos" },
+  { "tema": "profetas", "nivel": "experta", "pregunta": "¿Qué profeta vio al Señor en su trono y un serafín le tocó los labios con un carbón encendido?", "respuesta": "Isaías", "referencia": "Isaías 6:1-7" },
+  { "tema": "profetas", "nivel": "experta", "pregunta": "Según Eclesiastés, ¿qué tiene todo lo que se hace debajo del cielo?", "respuesta": "Su tiempo (todo tiene su hora)", "referencia": "Eclesiastés 3:1" },
+  { "tema": "profetas", "nivel": "experta", "pregunta": "¿Qué profeta anunció un nuevo pacto escrito en el corazón?", "respuesta": "Jeremías", "referencia": "Jeremías 31:31-33" },
+
+  { "tema": "nt", "nivel": "peques", "pregunta": "¿En qué pueblo nació Jesús?", "respuesta": "Belén", "opciones": ["Nazaret", "Belén", "Roma"], "referencia": "Lucas 2:4-7" },
+  { "tema": "nt", "nivel": "peques", "pregunta": "¿Cuántos apóstoles eligió Jesús?", "respuesta": "Doce", "opciones": ["Siete", "Doce", "Cuarenta"], "referencia": "Lucas 6:13" },
+  { "tema": "nt", "nivel": "peques", "pregunta": "¿Con qué dio de comer Jesús a una multitud?", "respuesta": "Cinco panes y dos peces", "opciones": ["Cinco panes y dos peces", "Dos panes y cinco peces", "Diez panes y un pez"], "referencia": "Juan 6:9-11" },
+  { "tema": "nt", "nivel": "peques", "pregunta": "¿Sobre qué caminó Jesús?", "respuesta": "Sobre el agua", "opciones": ["Sobre el fuego", "Sobre las nubes", "Sobre el agua"], "referencia": "Mateo 14:25" },
+  { "tema": "nt", "nivel": "peques", "pregunta": "¿En qué animal entró Jesús en Jerusalén?", "respuesta": "En un burrito", "opciones": ["En un caballo", "En un burrito", "En un camello"], "referencia": "Marcos 11:7" },
+
+  { "tema": "nt", "nivel": "media", "pregunta": "¿Qué apóstol negó a Jesús tres veces?", "respuesta": "Pedro", "opciones": ["Juan", "Judas", "Pedro"], "referencia": "Lucas 22:54-62" },
+  { "tema": "nt", "nivel": "media", "pregunta": "¿En qué convirtió Jesús el agua en las bodas de Caná?", "respuesta": "En vino", "referencia": "Juan 2:9" },
+  { "tema": "nt", "nivel": "media", "pregunta": "¿Cómo se llamaba el cobrador de impuestos que se subió a un árbol para ver a Jesús?", "respuesta": "Zaqueo", "opciones": ["Mateo", "Zaqueo", "Nicodemo"], "referencia": "Lucas 19:1-4" },
+  { "tema": "nt", "nivel": "media", "pregunta": "¿A quién resucitó Jesús después de cuatro días en la tumba?", "respuesta": "A Lázaro", "referencia": "Juan 11:39-44" },
+  { "tema": "nt", "nivel": "media", "pregunta": "¿Cómo se llamaba el apóstol Pablo antes de su conversión?", "respuesta": "Saulo", "referencia": "Hechos 13:9" },
+
+  { "tema": "nt", "nivel": "experta", "pregunta": "¿Quién fue elegido para ocupar el lugar de Judas entre los apóstoles?", "respuesta": "Matías", "referencia": "Hechos 1:26" },
+  { "tema": "nt", "nivel": "experta", "pregunta": "¿En qué isla estaba Juan cuando recibió la revelación del Apocalipsis?", "respuesta": "Patmos", "referencia": "Apocalipsis 1:9" },
+  { "tema": "nt", "nivel": "experta", "pregunta": "¿Quién fue el primer mártir cristiano?", "respuesta": "Esteban", "referencia": "Hechos 7:59-60" },
+  { "tema": "nt", "nivel": "experta", "pregunta": "¿Cómo se llamaba el hombre de Cirene que llevó la cruz de Jesús?", "respuesta": "Simón", "referencia": "Lucas 23:26" },
+  { "tema": "nt", "nivel": "experta", "pregunta": "¿Por qué esclavo intercede Pablo en su carta a Filemón?", "respuesta": "Onésimo", "referencia": "Filemón 10" }
+]

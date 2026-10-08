@@ -1,0 +1,182 @@
+:root {
+  /* Mesa de juego y cartas */
+  --mesa: #23264d;
+  --mesa-claro: #30346a;
+  --mesa-borde: #444a8a;
+  --carta: #ffffff;
+  --tinta: #1b1d33;
+  --tinta-suave: #5a5d78;
+  --sobre-mesa: #eef0ff;
+  --sobre-mesa-suave: #b5b9e3;
+
+  /* Los cuatro temas, como las fichas de un juego de mesa */
+  --tema-pentateuco: #3ba55c;
+  --tema-historicos: #3d7be0;
+  --tema-profetas: #f5b700;
+  --tema-nt: #e5484d;
+
+  --acierto: #3ba55c;
+  --fallo: #e5484d;
+
+  --fuente-titulo: 'Bricolage Grotesque', system-ui, sans-serif;
+  --fuente-texto: 'Atkinson Hyperlegible', system-ui, sans-serif;
+
+  --radio-carta: 20px;
+  --radio-boton: 14px;
+  --sombra-carta: 0 2px 0 rgba(0, 0, 0, 0.25), 0 12px 28px rgba(8, 10, 40, 0.35);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--mesa);
+  color: var(--sobre-mesa);
+  font-family: var(--fuente-texto);
+  font-size: 17px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--tema-profetas);
+  outline-offset: 3px;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-height: 56px;
+  padding: 0 1.4em;
+  border: 0;
+  border-radius: var(--radio-boton);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.15s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-principal {
+  background: var(--tema-profetas);
+  color: var(--tinta);
+}
+
+.btn-secundario {
+  background: var(--mesa-claro);
+  color: var(--sobre-mesa);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 2px var(--mesa-borde);
+}
+
+.btn-acierto {
+  background: var(--acierto);
+  color: #fff;
+}
+
+.btn-fallo {
+  background: var(--fallo);
+  color: #fff;
+}
+
+.btn-bloque {
+  width: 100%;
+}
+
+.btn-texto {
+  background: none;
+  border: 0;
+  padding: 0.6em 0.2em;
+  color: var(--sobre-mesa-suave);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Contenedor de pantalla: una columna pensada para móvil en vertical */
+.pantalla {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.acciones {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acciones-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.carta {
+  background: var(--carta);
+  color: var(--tinta);
+  border-radius: var(--radio-carta);
+  box-shadow: var(--sombra-carta);
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

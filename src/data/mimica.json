@@ -1,0 +1,73 @@
+[
+  { "tema": "pentateuco", "nivel": "peques", "texto": "Noé metiendo los animales en el arca", "referencia": "Génesis 7:9" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "Moisés abriendo el mar", "referencia": "Éxodo 14:21" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "Adán poniendo nombre a los animales", "referencia": "Génesis 2:19-20" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "Abraham contando las estrellas", "referencia": "Génesis 15:5" },
+  { "tema": "pentateuco", "nivel": "peques", "texto": "Las ranas saltando por todo Egipto", "referencia": "Éxodo 8:6" },
+
+  { "tema": "pentateuco", "nivel": "media", "texto": "Jacob luchando toda la noche", "referencia": "Génesis 32:24" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "El pueblo recogiendo maná del suelo", "referencia": "Éxodo 16:16-18" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "Moisés bajando del monte con las tablas", "referencia": "Éxodo 32:15" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "José explicando los sueños del faraón", "referencia": "Génesis 41:25" },
+  { "tema": "pentateuco", "nivel": "media", "texto": "Eva comiendo del fruto prohibido", "referencia": "Génesis 3:6" },
+
+  { "tema": "pentateuco", "nivel": "experta", "texto": "Esaú vendiendo su primogenitura por un guiso", "referencia": "Génesis 25:33-34" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "Moisés quitándose las sandalias ante la zarza", "referencia": "Éxodo 3:5" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "Moisés golpeando la roca para sacar agua", "referencia": "Números 20:11" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "La mujer de Lot mirando atrás y convirtiéndose en sal", "referencia": "Génesis 19:26" },
+  { "tema": "pentateuco", "nivel": "experta", "texto": "Aarón y Hur sosteniendo los brazos de Moisés", "referencia": "Éxodo 17:12" },
+
+  { "tema": "historicos", "nivel": "peques", "texto": "David lanzando la piedra con la honda", "referencia": "1 Samuel 17:49" },
+  { "tema": "historicos", "nivel": "peques", "texto": "Sansón empujando las columnas", "referencia": "Jueces 16:29-30" },
+  { "tema": "historicos", "nivel": "peques", "texto": "El pueblo dando vueltas a Jericó", "referencia": "Josué 6:15" },
+  { "tema": "historicos", "nivel": "peques", "texto": "Elías comiendo lo que le traen los cuervos", "referencia": "1 Reyes 17:6" },
+  { "tema": "historicos", "nivel": "peques", "texto": "David tocando el arpa", "referencia": "1 Samuel 16:23" },
+
+  { "tema": "historicos", "nivel": "media", "texto": "Sansón luchando contra un león", "referencia": "Jueces 14:5-6" },
+  { "tema": "historicos", "nivel": "media", "texto": "Los soldados de Gedeón bebiendo agua del río", "referencia": "Jueces 7:5-6" },
+  { "tema": "historicos", "nivel": "media", "texto": "Rut recogiendo espigas en el campo", "referencia": "Rut 2:3" },
+  { "tema": "historicos", "nivel": "media", "texto": "Salomón decidiendo de quién es el bebé", "referencia": "1 Reyes 3:24-27" },
+  { "tema": "historicos", "nivel": "media", "texto": "Elías subiendo al cielo en un torbellino", "referencia": "2 Reyes 2:11" },
+
+  { "tema": "historicos", "nivel": "experta", "texto": "Naamán bañándose siete veces en el Jordán", "referencia": "2 Reyes 5:14" },
+  { "tema": "historicos", "nivel": "experta", "texto": "David danzando delante del arca", "referencia": "2 Samuel 6:14" },
+  { "tema": "historicos", "nivel": "experta", "texto": "Nehemías reconstruyendo la muralla con la espada al cinto", "referencia": "Nehemías 4:17-18" },
+  { "tema": "historicos", "nivel": "experta", "texto": "Ester presentándose ante el rey sin ser llamada", "referencia": "Ester 5:1-2" },
+  { "tema": "historicos", "nivel": "experta", "texto": "Saúl lanzando su lanza contra David", "referencia": "1 Samuel 18:10-11" },
+
+  { "tema": "profetas", "nivel": "peques", "texto": "Jonás tragado por el pez", "referencia": "Jonás 1:17" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Daniel orando junto a la ventana", "referencia": "Daniel 6:10" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Un pastor cuidando sus ovejas", "referencia": "Salmo 23" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Los tres amigos paseando dentro del horno sin quemarse", "referencia": "Daniel 3:25" },
+  { "tema": "profetas", "nivel": "peques", "texto": "Los leones con la boca cerrada", "referencia": "Daniel 6:22" },
+
+  { "tema": "profetas", "nivel": "media", "texto": "Jonás enfadado bajo la planta", "referencia": "Jonás 4:6-9" },
+  { "tema": "profetas", "nivel": "media", "texto": "Nabucodonosor comiendo hierba como un buey", "referencia": "Daniel 4:33" },
+  { "tema": "profetas", "nivel": "media", "texto": "Jonás durmiendo en el barco durante la tormenta", "referencia": "Jonás 1:5" },
+  { "tema": "profetas", "nivel": "media", "texto": "Job rascándose con un trozo de teja", "referencia": "Job 2:8" },
+  { "tema": "profetas", "nivel": "media", "texto": "El perezoso que no quiere levantarse", "referencia": "Proverbios 6:9-10" },
+
+  { "tema": "profetas", "nivel": "experta", "texto": "Ezequiel acostado de lado frente a una maqueta de Jerusalén", "referencia": "Ezequiel 4:1-4" },
+  { "tema": "profetas", "nivel": "experta", "texto": "Isaías recibiendo el carbón encendido en los labios", "referencia": "Isaías 6:6-7" },
+  { "tema": "profetas", "nivel": "experta", "texto": "Jeremías rompiendo una vasija de barro", "referencia": "Jeremías 19:10" },
+  { "tema": "profetas", "nivel": "experta", "texto": "Belsasar asustado viendo la mano escribir en la pared", "referencia": "Daniel 5:5-6" },
+  { "tema": "profetas", "nivel": "experta", "texto": "Los marineros echando a Jonás al mar", "referencia": "Jonás 1:15" },
+
+  { "tema": "nt", "nivel": "peques", "texto": "Los pastores viendo a los ángeles", "referencia": "Lucas 2:8-9" },
+  { "tema": "nt", "nivel": "peques", "texto": "Jesús calmando la tormenta", "referencia": "Marcos 4:39" },
+  { "tema": "nt", "nivel": "peques", "texto": "Pedro pescando con la red", "referencia": "Lucas 5:4-6" },
+  { "tema": "nt", "nivel": "peques", "texto": "Jesús abrazando a los niños", "referencia": "Marcos 10:16" },
+  { "tema": "nt", "nivel": "peques", "texto": "Los magos siguiendo la estrella", "referencia": "Mateo 2:9" },
+
+  { "tema": "nt", "nivel": "media", "texto": "Zaqueo subiendo al árbol", "referencia": "Lucas 19:4" },
+  { "tema": "nt", "nivel": "media", "texto": "El hijo pródigo volviendo a casa", "referencia": "Lucas 15:20" },
+  { "tema": "nt", "nivel": "media", "texto": "Jesús lavando los pies a los discípulos", "referencia": "Juan 13:5" },
+  { "tema": "nt", "nivel": "media", "texto": "Pedro caminando sobre el agua y hundiéndose", "referencia": "Mateo 14:29-30" },
+  { "tema": "nt", "nivel": "media", "texto": "El ciego lavándose y empezando a ver", "referencia": "Juan 9:7" },
+
+  { "tema": "nt", "nivel": "experta", "texto": "Saulo cayendo al suelo, cegado por una luz", "referencia": "Hechos 9:3-4" },
+  { "tema": "nt", "nivel": "experta", "texto": "Eutico durmiéndose y cayendo por la ventana", "referencia": "Hechos 20:9" },
+  { "tema": "nt", "nivel": "experta", "texto": "Pablo sacudiéndose la víbora en el fuego", "referencia": "Hechos 28:3-5" },
+  { "tema": "nt", "nivel": "experta", "texto": "Pedro despertado por el ángel en la cárcel", "referencia": "Hechos 12:7" },
+  { "tema": "nt", "nivel": "experta", "texto": "La viuda echando sus dos moneditas", "referencia": "Marcos 12:42" }
+]
