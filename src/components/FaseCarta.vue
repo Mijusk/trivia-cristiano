@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { INFO_PRUEBA, INFO_TEMA, TEXTO_TIPO, TIEMPOS_POR_DEFECTO } from '../game/config'
+import { INFO_PRUEBA, INFO_TEMA, TEXTO_TIPO, TIEMPOS_POR_DEFECTO, resaltarClaves } from '../game/config'
 import { useTemporizador } from '../composables/useTemporizador'
 import { usePartidaStore } from '../stores/partida'
 import CartaTapada from './CartaTapada.vue'
@@ -56,6 +56,10 @@ function verRespuesta() {
   respuestaVisible.value = true
 }
 
+const trozosDibujo = computed(() =>
+  carta.value.prueba === 'dibujar' ? resaltarClaves(carta.value.adivinar, carta.value.claves) : [],
+)
+
 const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describir', mimica: 'hacer la mímica' }
 </script>
 
@@ -98,7 +102,8 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
     <template v-else>
       <p class="instruccion">
         Pasa el móvil a quien va a {{ verbo[carta.prueba] }}. {{ prueba.instruccion }}
-        Tu pareja tiene que decir lo que pone en grande.
+        <template v-if="carta.prueba === 'dibujar'">Tu pareja tiene que decir las palabras resaltadas.</template>
+        <template v-else>Tu pareja tiene que decir lo que pone en grande.</template>
       </p>
       <CartaTapada :color="colorTema" @vista="vista = true">
         <span class="contenido-tapado">
@@ -110,6 +115,15 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
                 <span v-for="w in carta.prohibidas" :key="w">{{ w }}</span>
               </span>
             </span>
+          </template>
+          <template v-else-if="carta.prueba === 'dibujar'">
+            <strong class="palabra dibujo">
+              <template v-for="(t, i) in trozosDibujo" :key="i">
+                <mark v-if="t.clave" class="clave">{{ t.texto }}</mark>
+                <span v-else class="relleno">{{ t.texto }}</span>
+              </template>
+            </strong>
+            <span v-if="carta.escena" class="escena">Dibuja: {{ carta.escena }}</span>
           </template>
           <template v-else>
             <strong class="palabra">{{ carta.adivinar }}</strong>
@@ -246,6 +260,20 @@ h1 {
 
 .opciones .quitada {
   text-decoration: line-through;
+}
+
+.dibujo .relleno {
+  color: var(--tinta-suave);
+  font-weight: 600;
+}
+
+.clave {
+  background: color-mix(in srgb, var(--color-tema) 30%, transparent);
+  color: var(--tinta);
+  padding: 0 0.15em;
+  border-radius: 6px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .escena {

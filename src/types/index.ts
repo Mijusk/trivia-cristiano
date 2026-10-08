@@ -27,9 +27,9 @@ export interface CartaPregunta extends CartaBase {
   opciones: string[]
 }
 
-/** Dibujar y mímica: la pareja solo tiene que decir `adivinar`; la escena ayuda a quien actúa. */
 export type TipoCarta = 'animal' | 'personaje' | 'objeto' | 'escena'
 
+/** Dibujar y mímica: la pareja tiene que decir `adivinar`; la escena ayuda a quien actúa. */
 interface CartaActuar extends CartaBase {
   adivinar: string
   /** Se muestra a todos desde el principio, como en el Pictionary. */
@@ -41,6 +41,8 @@ interface CartaActuar extends CartaBase {
 
 export interface CartaDibujar extends CartaActuar {
   prueba: 'dibujar'
+  /** Palabras de `adivinar` que basta con decir (en cualquier orden) para acertar. */
+  claves: string[]
 }
 
 export interface CartaDescribir extends CartaBase {

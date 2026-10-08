@@ -9,7 +9,7 @@ Juego de mesa bíblico por parejas que se juega entero desde un móvil o tablet 
 - Cada casilla combina un **tema** (color) y una **prueba** (icono):
   - Temas: 🟩 Pentateuco · 🟦 Históricos · 🟨 Profetas y Sapienciales · 🟥 Nuevo Testamento
   - Pruebas: ❓ Pregunta · ✏️ Dibujar (en papel) · 🗣️ Describir · 🎭 Mímica
-- En Dibujar, Describir y Mímica la carta sale tapada: solo la ve quien actúa (mantener pulsado). Solo vale si la pareja dice exactamente lo que pone en grande.
+- En Dibujar, Describir y Mímica la carta sale tapada: solo la ve quien actúa (mantener pulsado). En Describir y Mímica solo vale si la pareja dice exactamente lo que pone en grande; en Dibujar basta con decir las palabras resaltadas.
 - Cada carta tiene una pista (menos Describir): en las preguntas de Peques quita una opción falsa; en el resto de niveles muestra tres opciones. En Dibujar y Mímica da una pequeña ayuda en voz alta.
 - Se puede cambiar de carta una vez por turno.
 - Si aciertan, ganan ese quesito. Acierten o no, pasa el turno.
@@ -52,13 +52,15 @@ Cada tarjeta lleva `tema` (`pentateuco`, `historicos`, `profetas`, `nt`), `nivel
 | Archivo | Campos |
 |---|---|
 | `preguntas.json` | `pregunta`, `respuesta`, `opciones` (siempre 3, una es la respuesta) |
-| `dibujar.json` / `mimica.json` | `adivinar` (lo que hay que decir, máx. 3 palabras), `escena` (ayuda para quien actúa), `pista`; en mímica también `tipo` (`animal`, `personaje`, `objeto`, `escena`), que se muestra a todos |
+| `dibujar.json` | `adivinar` (la situación), `claves` (1 o 2 palabras de `adivinar` que basta con decir), `tipo`, `escena` (qué dibujar), `pista` |
+| `mimica.json` | `adivinar` (lo que hay que decir, máx. 3 palabras), `tipo`, `escena` (ayuda para quien actúa), `pista` |
 | `describir.json` | `palabra`, `prohibidas` (vacío en peques, 3 o más en el resto) |
 
 Criterios:
 
 - **Peques:** historias de una Biblia infantil. **Media:** lo que conoce alguien que va a la iglesia. **Experta:** detalles, pero que se puedan deducir con la pista.
 - Cada pregunta da contexto de la historia; nada de datos sueltos.
+- Dibujar: situaciones que se entienden en un papel. Peques, una cosa con una clave; Media, escenas famosas; Experta, escenas, parábolas y visiones.
 - Mímica: si para explicarla hace falta hablar, no sirve. Peques son animales y objetos; Media, personajes con su gesto famoso; Experta, escenas y parábolas.
 
 Después de editar, ejecuta `npm run check:cards`.

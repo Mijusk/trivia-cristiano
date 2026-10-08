@@ -43,3 +43,17 @@ export const TEXTO_TIPO: Record<TipoCarta, string> = {
   objeto: 'un objeto',
   escena: 'una escena',
 }
+
+/**
+ * Parte un texto en trozos marcando las palabras clave, para resaltarlas.
+ * «Jonás dentro del pez» con claves [Jonás, pez] → Jonás(clave) · dentro del · pez(clave)
+ */
+export function resaltarClaves(texto: string, claves: string[]): { texto: string; clave: boolean }[] {
+  if (!claves.length) return [{ texto, clave: false }]
+  const escapar = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const patron = new RegExp(`(${claves.map(escapar).join('|')})`, 'gi')
+  return texto
+    .split(patron)
+    .filter(Boolean)
+    .map((trozo) => ({ texto: trozo, clave: claves.some((c) => c.toLowerCase() === trozo.toLowerCase()) }))
+}

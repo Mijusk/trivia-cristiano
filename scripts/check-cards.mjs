@@ -39,7 +39,12 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
         fallo(`${donde}: la mímica necesita tipo (animal, personaje, objeto o escena)`)
       const VACIAS = new Set(['el', 'la', 'los', 'las', 'de', 'del', 'y', 'en', 'al', 'a'])
       const llenas = (c.adivinar ?? '').toLowerCase().split(/\s+/).filter((w) => !VACIAS.has(w))
-      if (llenas.length > 3) fallo(`${donde}: «${c.adivinar}» es demasiado largo para adivinar (máx. 3 palabras con significado)`)
+      if (prueba === 'dibujar') {
+        if (!['animal', 'personaje', 'objeto', 'escena'].includes(c.tipo)) fallo(`${donde}: el dibujo necesita tipo`)
+        if (!Array.isArray(c.claves) || c.claves.length < 1 || c.claves.length > 2) fallo(`${donde}: necesita 1 o 2 palabras clave`)
+        else for (const k of c.claves)
+          if (!c.adivinar.toLowerCase().includes(k.toLowerCase())) fallo(`${donde}: la clave «${k}» no aparece en «${c.adivinar}»`)
+      } else if (llenas.length > 3) fallo(`${donde}: «${c.adivinar}» es demasiado largo para adivinar (máx. 3 palabras con significado)`)
     }
     if (prueba === 'describir') {
       if (!Array.isArray(c.prohibidas)) fallo(`${donde}: faltan las palabras prohibidas`)
