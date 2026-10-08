@@ -5,6 +5,7 @@ import { useTemporizador } from '../composables/useTemporizador'
 import { usePartidaStore } from '../stores/partida'
 import CartaTapada from './CartaTapada.vue'
 import Temporizador from './Temporizador.vue'
+import { sonido } from '../audio/sonido'
 
 const store = usePartidaStore()
 
@@ -50,6 +51,18 @@ const textoBotonPista = computed(() => {
   return esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
 })
 const pistaDisponible = computed(() => tienePista.value && !pistaUsada.value && !respuestaVisible.value)
+
+function pedirPista() {
+  store.usarPista()
+  sonido.pista()
+}
+
+function resolver(acertada: boolean) {
+  store.resolver(acertada)
+  if (store.partida?.fase === 'victoria') sonido.victoria()
+  else if (acertada) sonido.acierto()
+  else sonido.fallo()
+}
 
 function verRespuesta() {
   reloj.parar()
@@ -166,12 +179,12 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       </template>
 
       <div v-if="puedeResolver && (esPregunta || haEmpezado)" class="acciones-fila">
-        <button class="btn btn-fallo" @click="store.resolver(false)">{{ esPregunta ? 'Fallada' : 'No lo adivinó' }}</button>
-        <button class="btn btn-acierto" @click="store.resolver(true)">{{ esPregunta ? 'Acertada' : '¡Adivinado!' }}</button>
+        <button class="btn btn-fallo" @click="resolver(false)">{{ esPregunta ? 'Fallada' : 'No lo adivinó' }}</button>
+        <button class="btn btn-acierto" @click="resolver(true)">{{ esPregunta ? 'Acertada' : '¡Adivinado!' }}</button>
       </div>
 
       <div class="extras">
-        <button v-if="pistaDisponible" class="btn-texto" @click="store.usarPista()">{{ textoBotonPista }}</button>
+        <button v-if="pistaDisponible" class="btn-texto" @click="pedirPista">{{ textoBotonPista }}</button>
         <button v-if="!haEmpezado && !cambioUsado" class="btn-texto" @click="store.otraCarta()">
           Cambiar carta (1 por turno)
         </button>

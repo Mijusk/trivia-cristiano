@@ -1,4 +1,5 @@
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { sonido } from '../audio/sonido'
 
 /** Cuenta atrás basada en la hora real, para que no se desvíe si el móvil va lento. */
 export function useTemporizador(segundos: number) {
@@ -12,11 +13,18 @@ export function useTemporizador(segundos: number) {
   const restante = computed(() => Math.ceil(restanteMs.value / 1000))
   const fraccion = computed(() => restanteMs.value / (total.value * 1000))
 
+  // Los últimos cinco segundos suenan; al acabar, un gong suave.
+  watch(restante, (s, antes) => {
+    if (!enMarcha.value || s === antes) return
+    if (s > 0 && s <= 5) sonido.relojTic(s <= 2)
+  })
+
   function tick() {
     restanteMs.value = Math.max(0, finEn - Date.now())
     if (restanteMs.value === 0) {
       parar()
       terminado.value = true
+      sonido.tiempo()
       try {
         navigator.vibrate?.([200, 100, 200])
       } catch {

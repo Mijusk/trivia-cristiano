@@ -4,6 +4,7 @@ import type { Casilla } from '../types'
 import { INFO_NIVEL, INFO_PRUEBA, INFO_TEMA } from '../game/config'
 import { usePartidaStore } from '../stores/partida'
 import Ruleta from './Ruleta.vue'
+import { sonido } from '../audio/sonido'
 
 const store = usePartidaStore()
 const ruleta = ref<InstanceType<typeof Ruleta> | null>(null)
@@ -16,7 +17,9 @@ function alEmpezar() {
 }
 
 function sacarCarta() {
-  if (resultado.value) store.jugarCasilla(resultado.value)
+  if (!resultado.value) return
+  sonido.carta()
+  store.jugarCasilla(resultado.value)
 }
 
 function alTerminar(casilla: Casilla) {

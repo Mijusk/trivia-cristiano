@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Casilla } from '../types'
+import { sonido } from '../audio/sonido'
 import { INFO_PRUEBA, INFO_TEMA } from '../game/config'
 
 /**
@@ -17,6 +18,29 @@ const girando = ref(false)
 const elegida = ref<number | null>(null)
 let seguridad: ReturnType<typeof setTimeout> | undefined
 let pendiente = -1
+
+const giro = ref<SVGGElement | null>(null)
+let animacion = 0
+
+/** Mientras gira, suena un tic cada vez que una casilla pasa por el indicador. */
+function seguirTics() {
+  let ultima = -1
+  const paso = () => {
+    const el = giro.value
+    if (!el || !girando.value) return
+    const m = getComputedStyle(el).transform
+    const partes = m.startsWith('matrix(') ? m.slice(7, -1).split(',').map(Number) : null
+    if (partes) {
+      const grados = (Math.atan2(partes[1], partes[0]) * 180) / Math.PI
+      const bajoIndicador = ((360 - grados) % 360 + 360) % 360
+      const casilla = Math.floor(bajoIndicador / angulo.value)
+      if (ultima !== -1 && casilla !== ultima) sonido.tic()
+      ultima = casilla
+    }
+    animacion = requestAnimationFrame(paso)
+  }
+  animacion = requestAnimationFrame(paso)
+}
 
 const n = computed(() => props.casillas.length)
 const angulo = computed(() => 360 / Math.max(1, n.value))
@@ -54,6 +78,7 @@ function girar() {
   girando.value = true
   rotacion.value = vueltas + (360 - destino)
   emit('empieza')
+  if (n.value > 1) seguirTics()
   // Por si el navegador no avisa del final de la animación.
   pendiente = i
   clearTimeout(seguridad)
@@ -68,8 +93,10 @@ function alTerminarTransicion(e: TransitionEvent) {
 function terminar(i: number) {
   if (!girando.value) return
   clearTimeout(seguridad)
+  cancelAnimationFrame(animacion)
   girando.value = false
   elegida.value = i
+  sonido.ruletaPara()
   try {
     navigator.vibrate?.(60)
   } catch {
@@ -89,6 +116,7 @@ defineExpose({ girar, girando })
     <svg class="rueda" viewBox="-160 -160 320 320" role="img" :aria-label="`Ruleta con ${n} casillas`">
       <circle r="158" class="aro" />
       <g
+        ref="giro"
         class="giro"
         :style="{ transform: `rotate(${rotacion}deg)` }"
         @transitionend="alTerminarTransicion"

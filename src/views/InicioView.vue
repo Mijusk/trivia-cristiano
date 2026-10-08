@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { usePartidaStore } from '../stores/partida'
 import PortadaEscena from '../components/PortadaEscena.vue'
 import ReglasModal from '../components/ReglasModal.vue'
+import BotonSonido from '../components/BotonSonido.vue'
 
 const store = usePartidaStore()
 const reglasAbiertas = ref(false)
@@ -12,6 +13,7 @@ const reglasAbiertas = ref(false)
   <main class="portada">
     <section class="cielo">
       <div class="estrellas" aria-hidden="true" />
+      <BotonSonido class="sonido" />
 
       <header class="titulo">
         <svg class="logo" viewBox="-54 -54 108 108" aria-hidden="true">
@@ -92,6 +94,13 @@ const reglasAbiertas = ref(false)
     radial-gradient(1px 1px at 20% 60%, #fff 50%, transparent 51%);
   opacity: 0;
   animation: aparece 2s ease 0.2s forwards;
+}
+
+.sonido {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: 14px;
+  z-index: 1;
 }
 
 .titulo {
