@@ -5,14 +5,18 @@ import FaseTurno from '../components/FaseTurno.vue'
 import FaseCarta from '../components/FaseCarta.vue'
 import FaseResultado from '../components/FaseResultado.vue'
 import FaseVictoria from '../components/FaseVictoria.vue'
+import ReglasModal from '../components/ReglasModal.vue'
+import { ref } from 'vue'
 
 const store = usePartidaStore()
+const reglasAbiertas = ref(false)
 </script>
 
 <template>
   <main v-if="store.partida" class="pantalla juego">
     <header class="barra">
       <Marcador :parejas="store.partida.parejas" :modo="store.partida.modo" :turno="store.partida.turno" />
+      <button class="salir" aria-label="Ver las reglas" @click="reglasAbiertas = true">?</button>
       <button class="salir" aria-label="Salir al inicio (la partida queda guardada)" @click="store.irA('inicio')">
         Salir
       </button>
@@ -22,6 +26,7 @@ const store = usePartidaStore()
     <FaseCarta v-else-if="store.partida.fase === 'carta'" :key="store.partida.cartaId ?? 'carta'" />
     <FaseResultado v-else-if="store.partida.fase === 'resultado'" />
     <FaseVictoria v-else />
+    <ReglasModal v-model="reglasAbiertas" />
   </main>
 </template>
 
