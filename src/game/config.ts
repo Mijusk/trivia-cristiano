@@ -7,16 +7,16 @@ export const MODOS: Modo[] = ['corta', 'media', 'completa']
 
 export const INFO_TEMA: Record<Tema, { nombre: string; libros: string; color: string }> = {
   pentateuco: { nombre: 'Pentateuco', libros: 'Génesis – Deuteronomio', color: 'var(--tema-pentateuco)' },
-  historicos: { nombre: 'Históricos', libros: 'Josué – Ester', color: 'var(--tema-historicos)' },
+  historicos: { nombre: 'Históricos', libros: 'Josué – Macabeos', color: 'var(--tema-historicos)' },
   profetas: { nombre: 'Profetas y Sapienciales', libros: 'Job – Malaquías', color: 'var(--tema-profetas)' },
   nt: { nombre: 'Nuevo Testamento', libros: 'Mateo – Apocalipsis', color: 'var(--tema-nt)' },
 }
 
 export const INFO_PRUEBA: Record<Prueba, { nombre: string; icono: string; instruccion: string }> = {
   pregunta: { nombre: 'Pregunta', icono: '❓', instruccion: 'Responded entre los dos.' },
-  dibujar: { nombre: 'Dibujar', icono: '✏️', instruccion: 'Dibuja en papel sin letras ni números. Tu pareja adivina.' },
-  describir: { nombre: 'Describir', icono: '🗣️', instruccion: 'Descríbelo con palabras sin decir las prohibidas. Tu pareja adivina.' },
-  mimica: { nombre: 'Mímica', icono: '🎭', instruccion: 'Imítalo sin hablar ni hacer sonidos. Tu pareja adivina.' },
+  dibujar: { nombre: 'Dibujar', icono: '✏️', instruccion: 'Dibuja en papel sin letras ni números.' },
+  describir: { nombre: 'Describir', icono: '🗣️', instruccion: 'Descríbelo sin decir la palabra ni las prohibidas.' },
+  mimica: { nombre: 'Mímica', icono: '🎭', instruccion: 'Imítalo sin hablar ni hacer sonidos.' },
 }
 
 export const INFO_NIVEL: Record<Nivel, { nombre: string; descripcion: string }> = {

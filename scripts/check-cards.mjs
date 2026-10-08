@@ -21,16 +21,29 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     const donde = `${archivo}.json #${i}`
     if (!TEMAS.includes(c.tema)) fallo(`${donde}: tema "${c.tema}" no válido`)
     if (!NIVELES.includes(c.nivel)) fallo(`${donde}: nivel "${c.nivel}" no válido`)
-    const texto = c.pregunta ?? c.palabra ?? c.texto
+    const texto = c.pregunta ?? c.palabra ?? c.adivinar
     if (!texto) fallo(`${donde}: falta el texto de la carta`)
+    if (/Jehová/i.test(JSON.stringify(c))) fallo(`${donde}: usa «Jehová»; en la versión católica es «el Señor»`)
+    if (c.referencia && /\d:\d/.test(c.referencia)) fallo(`${donde}: la referencia usa «:»; en formato católico es «,» (Gén 6,14)`)
     if (vistas.has(`${c.nivel}|${texto}`)) fallo(`${donde}: repetida en el mismo nivel: "${texto}"`)
     vistas.add(`${c.nivel}|${texto}`)
     if (prueba === 'pregunta') {
       if (!c.respuesta) fallo(`${donde}: falta la respuesta`)
-      if (c.opciones && !c.opciones.includes(c.respuesta)) fallo(`${donde}: la respuesta no está entre las opciones`)
-      if (c.nivel === 'peques' && !c.opciones) fallo(`${donde}: las preguntas de peques deben tener opciones`)
+      if (!Array.isArray(c.opciones) || c.opciones.length !== 3) fallo(`${donde}: necesita exactamente 3 opciones`)
+      else if (!c.opciones.includes(c.respuesta)) fallo(`${donde}: la respuesta no está entre las opciones`)
+      else if (new Set(c.opciones).size !== 3) fallo(`${donde}: opciones repetidas`)
     }
-    if (prueba === 'describir' && !Array.isArray(c.prohibidas)) fallo(`${donde}: faltan las palabras prohibidas`)
+    if (prueba === 'dibujar' || prueba === 'mimica') {
+      if (!c.pista) fallo(`${donde}: falta la pista`)
+      const VACIAS = new Set(['el', 'la', 'los', 'las', 'de', 'del', 'y', 'en', 'al', 'a'])
+      const llenas = (c.adivinar ?? '').toLowerCase().split(/\s+/).filter((w) => !VACIAS.has(w))
+      if (llenas.length > 3) fallo(`${donde}: «${c.adivinar}» es demasiado largo para adivinar (máx. 3 palabras con significado)`)
+    }
+    if (prueba === 'describir') {
+      if (!Array.isArray(c.prohibidas)) fallo(`${donde}: faltan las palabras prohibidas`)
+      else if (c.nivel === 'peques' && c.prohibidas.length) fallo(`${donde}: en peques no hay palabras prohibidas`)
+      else if (c.nivel !== 'peques' && c.prohibidas.length < 3) fallo(`${donde}: necesita al menos 3 palabras prohibidas`)
+    }
     const clave = `${c.tema}|${prueba}|${c.nivel}`
     tabla[clave] = (tabla[clave] ?? 0) + 1
   })

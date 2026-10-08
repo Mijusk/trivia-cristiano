@@ -73,6 +73,8 @@ export const usePartidaStore = defineStore('partida', () => {
       casilla: null,
       cartaId: null,
       cartaDeOtroTema: false,
+      pistaUsada: false,
+      cambioUsado: false,
       usadas: partida.value?.usadas ?? cargarUsadas(),
       ultimoAcierto: null,
       tiempos: { ...TIEMPOS_POR_DEFECTO },
@@ -90,14 +92,21 @@ export const usePartidaStore = defineStore('partida', () => {
     p.cartaId = carta.id
     p.cartaDeOtroTema = deOtroTema
     p.usadas.push(carta.id)
+    p.pistaUsada = false
     p.ultimoAcierto = null
     p.fase = 'carta'
   }
 
-  /** Cambia la carta por otra de la misma casilla (antes de empezar el tiempo). */
+  /** Cambia la carta por otra de la misma casilla. Solo una vez por turno. */
   function otraCarta() {
     const p = partida.value
-    if (p?.casilla) jugarCasilla(p.casilla)
+    if (!p?.casilla || p.cambioUsado) return
+    jugarCasilla(p.casilla)
+    p.cambioUsado = true
+  }
+
+  function usarPista() {
+    if (partida.value) partida.value.pistaUsada = true
   }
 
   function resolver(acierto: boolean) {
@@ -119,6 +128,8 @@ export const usePartidaStore = defineStore('partida', () => {
     p.casilla = null
     p.cartaId = null
     p.cartaDeOtroTema = false
+    p.pistaUsada = false
+    p.cambioUsado = false
     p.ultimoAcierto = null
     p.fase = 'turno'
   }
@@ -146,6 +157,7 @@ export const usePartidaStore = defineStore('partida', () => {
     nuevaPartida,
     jugarCasilla,
     otraCarta,
+    usarPista,
     resolver,
     siguienteTurno,
     terminar,

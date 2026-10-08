@@ -23,12 +23,20 @@ export interface CartaPregunta extends CartaBase {
   prueba: 'pregunta'
   pregunta: string
   respuesta: string
-  opciones?: string[]
+  /** Tres opciones, una es la respuesta. En peques se ven siempre; en el resto son la pista. */
+  opciones: string[]
 }
 
-export interface CartaDibujar extends CartaBase {
+/** Dibujar y mímica: la pareja solo tiene que decir `adivinar`; la escena ayuda a quien actúa. */
+interface CartaActuar extends CartaBase {
+  adivinar: string
+  escena?: string
+  /** Se lee en voz alta si la pareja pide pista. */
+  pista: string
+}
+
+export interface CartaDibujar extends CartaActuar {
   prueba: 'dibujar'
-  texto: string
 }
 
 export interface CartaDescribir extends CartaBase {
@@ -37,9 +45,8 @@ export interface CartaDescribir extends CartaBase {
   prohibidas: string[]
 }
 
-export interface CartaMimica extends CartaBase {
+export interface CartaMimica extends CartaActuar {
   prueba: 'mimica'
-  texto: string
 }
 
 export type Carta = CartaPregunta | CartaDibujar | CartaDescribir | CartaMimica
@@ -64,6 +71,10 @@ export interface Partida {
   cartaId: string | null
   /** La carta salió de otro tema porque no quedaban del tema pedido. */
   cartaDeOtroTema: boolean
+  /** Ya se ha pedido la pista de la carta actual. */
+  pistaUsada: boolean
+  /** La pareja ya ha cambiado de carta en este turno. */
+  cambioUsado: boolean
   usadas: string[]
   ultimoAcierto: boolean | null
   tiempos: { pregunta: number; actuar: number }

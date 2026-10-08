@@ -38,6 +38,10 @@ const store = usePartidaStore()
           <span><strong>{{ INFO_PRUEBA[p].nombre }}.</strong> {{ INFO_PRUEBA[p].instruccion }}</span>
         </li>
       </ul>
+      <p>
+        En dibujar, describir y mímica solo vale si tu pareja dice exactamente lo que pone en grande en la carta.
+        Las preguntas, los dibujos y las mímicas tienen una pista, y en cada turno se puede cambiar de carta una vez.
+      </p>
       <p class="nota">Para dibujar necesitaréis papel y boli.</p>
     </section>
 

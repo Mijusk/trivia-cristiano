@@ -13,6 +13,8 @@ const casilla = computed(() => store.partida!.casilla!)
 const esPregunta = computed(() => carta.value.prueba === 'pregunta')
 const colorTema = computed(() => INFO_TEMA[casilla.value.tema].color)
 const prueba = computed(() => INFO_PRUEBA[casilla.value.prueba])
+const pistaUsada = computed(() => store.partida!.pistaUsada)
+const cambioUsado = computed(() => store.partida!.cambioUsado)
 
 const segundos = esPregunta.value ? store.partida!.tiempos.pregunta : store.partida!.tiempos.actuar
 const reloj = useTemporizador(segundos)
@@ -22,6 +24,27 @@ const respuestaVisible = ref(false)
 
 const haEmpezado = computed(() => reloj.enMarcha.value || reloj.terminado.value || respuestaVisible.value)
 const puedeResolver = computed(() => (esPregunta.value ? respuestaVisible.value : vista.value))
+
+/* Pista en preguntas: en peques quita una opción falsa; en el resto muestra las tres opciones. */
+const esPeques = computed(() => carta.value.nivel === 'peques')
+const opcionesVisibles = computed(() => esPregunta.value && (esPeques.value || pistaUsada.value || respuestaVisible.value))
+
+/** La opción falsa que quita la pista en peques. Depende del id para que no cambie al recargar. */
+const opcionQuitada = computed(() => {
+  const c = carta.value
+  if (c.prueba !== 'pregunta' || !esPeques.value || !pistaUsada.value) return null
+  const falsas = c.opciones.filter((o) => o !== c.respuesta)
+  const semilla = [...c.id].reduce((a, ch) => a + ch.charCodeAt(0), 0)
+  return falsas[semilla % falsas.length] ?? null
+})
+
+/* Dibujar y mímica tienen pista; en describir no hace falta porque quien describe puede hablar. */
+const tienePista = computed(() => carta.value.prueba !== 'describir')
+const textoBotonPista = computed(() => {
+  if (!esPregunta.value) return 'Pista'
+  return esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
+})
+const pistaDisponible = computed(() => tienePista.value && !pistaUsada.value && !respuestaVisible.value)
 
 function verRespuesta() {
   reloj.parar()
@@ -45,11 +68,15 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
     <template v-if="carta.prueba === 'pregunta'">
       <article class="carta carta-pregunta">
         <p class="texto-pregunta">{{ carta.pregunta }}</p>
-        <ol v-if="carta.opciones?.length" class="opciones" type="A">
+        <ol v-if="opcionesVisibles" class="opciones" type="A">
           <li
             v-for="op in carta.opciones"
             :key="op"
-            :class="{ correcta: respuestaVisible && op === carta.respuesta, descartada: respuestaVisible && op !== carta.respuesta }"
+            :class="{
+              correcta: respuestaVisible && op === carta.respuesta,
+              descartada: (respuestaVisible && op !== carta.respuesta) || op === opcionQuitada,
+              quitada: op === opcionQuitada,
+            }"
           >
             {{ op }}
           </li>
@@ -66,6 +93,7 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
     <template v-else>
       <p class="instruccion">
         Pasa el móvil a quien va a {{ verbo[carta.prueba] }}. {{ prueba.instruccion }}
+        Tu pareja tiene que decir lo que pone en grande.
       </p>
       <CartaTapada :color="colorTema" @vista="vista = true">
         <span class="contenido-tapado">
@@ -78,10 +106,16 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
               </span>
             </span>
           </template>
-          <strong v-else class="palabra">{{ carta.texto }}</strong>
+          <template v-else>
+            <strong class="palabra">{{ carta.adivinar }}</strong>
+            <span v-if="carta.escena" class="escena">{{ carta.escena }}</span>
+          </template>
           <span v-if="carta.referencia" class="referencia">{{ carta.referencia }}</span>
         </span>
       </CartaTapada>
+      <p v-if="pistaUsada && carta.prueba !== 'describir'" class="pista-texto">
+        <span class="etiqueta-pista">Pista</span> {{ carta.pista }}
+      </p>
     </template>
 
     <Temporizador
@@ -114,7 +148,12 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
         <button class="btn btn-acierto" @click="store.resolver(true)">{{ esPregunta ? 'Acertada' : '¡Adivinado!' }}</button>
       </div>
 
-      <button v-if="!haEmpezado" class="btn-texto" @click="store.otraCarta()">Cambiar carta</button>
+      <div class="extras">
+        <button v-if="pistaDisponible" class="btn-texto" @click="store.usarPista()">{{ textoBotonPista }}</button>
+        <button v-if="!haEmpezado && !cambioUsado" class="btn-texto" @click="store.otraCarta()">
+          Cambiar carta (1 por turno)
+        </button>
+      </div>
       <p v-if="store.partida?.cartaDeOtroTema" class="nota">
         No quedaban cartas de este tema para vuestro nivel, así que sale una de otro. El quesito cuenta igual.
       </p>
@@ -195,6 +234,43 @@ h1 {
 
 .opciones .descartada {
   opacity: 0.4;
+}
+
+.opciones .quitada {
+  text-decoration: line-through;
+}
+
+.escena {
+  max-width: 30ch;
+  font-size: 1rem;
+  color: var(--tinta-suave);
+  line-height: 1.35;
+}
+
+.pista-texto {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--mesa-claro);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.etiqueta-pista {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--tema-profetas);
+  color: var(--tinta);
+  font-size: 0.85rem;
+}
+
+.extras {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px 20px;
 }
 
 .respuesta {

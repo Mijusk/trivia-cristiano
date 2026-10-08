@@ -18,7 +18,7 @@ const solucion = computed(() => {
   if (!c) return ''
   if (c.prueba === 'pregunta') return c.respuesta
   if (c.prueba === 'describir') return c.palabra
-  return c.texto
+  return c.adivinar
 })
 </script>
 
