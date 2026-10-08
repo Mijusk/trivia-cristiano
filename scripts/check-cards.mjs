@@ -35,6 +35,8 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     }
     if (prueba === 'dibujar' || prueba === 'mimica') {
       if (!c.pista) fallo(`${donde}: falta la pista`)
+      if (prueba === 'mimica' && !['animal', 'personaje', 'objeto', 'escena'].includes(c.tipo))
+        fallo(`${donde}: la mímica necesita tipo (animal, personaje, objeto o escena)`)
       const VACIAS = new Set(['el', 'la', 'los', 'las', 'de', 'del', 'y', 'en', 'al', 'a'])
       const llenas = (c.adivinar ?? '').toLowerCase().split(/\s+/).filter((w) => !VACIAS.has(w))
       if (llenas.length > 3) fallo(`${donde}: «${c.adivinar}» es demasiado largo para adivinar (máx. 3 palabras con significado)`)

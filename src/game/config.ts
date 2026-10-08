@@ -1,4 +1,4 @@
-import type { Modo, Nivel, Prueba, Tema } from '../types'
+import type { Modo, Nivel, Prueba, Tema, TipoCarta } from '../types'
 
 export const TEMAS: Tema[] = ['pentateuco', 'historicos', 'profetas', 'nt']
 export const PRUEBAS: Prueba[] = ['pregunta', 'dibujar', 'describir', 'mimica']
@@ -34,4 +34,12 @@ export const INFO_MODO: Record<Modo, { nombre: string; descripcion: string }> = 
   completa: { nombre: 'Completa', descripcion: 'Las 16 casillas, más de 2 horas' },
 }
 
-export const TIEMPOS_POR_DEFECTO = { pregunta: 30, actuar: 60 }
+export const TIEMPOS_POR_DEFECTO = { pregunta: 30, actuar: 60, mimica: 90 }
+
+/** Cómo se anuncia el tipo de carta en voz alta: «Es un animal». */
+export const TEXTO_TIPO: Record<TipoCarta, string> = {
+  animal: 'un animal',
+  personaje: 'un personaje',
+  objeto: 'un objeto',
+  escena: 'una escena',
+}

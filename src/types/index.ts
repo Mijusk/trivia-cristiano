@@ -28,8 +28,12 @@ export interface CartaPregunta extends CartaBase {
 }
 
 /** Dibujar y mímica: la pareja solo tiene que decir `adivinar`; la escena ayuda a quien actúa. */
+export type TipoCarta = 'animal' | 'personaje' | 'objeto' | 'escena'
+
 interface CartaActuar extends CartaBase {
   adivinar: string
+  /** Se muestra a todos desde el principio, como en el Pictionary. */
+  tipo?: TipoCarta
   escena?: string
   /** Se lee en voz alta si la pareja pide pista. */
   pista: string
@@ -77,5 +81,5 @@ export interface Partida {
   cambioUsado: boolean
   usadas: string[]
   ultimoAcierto: boolean | null
-  tiempos: { pregunta: number; actuar: number }
+  tiempos: { pregunta: number; actuar: number; mimica?: number }
 }

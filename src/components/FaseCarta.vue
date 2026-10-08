@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { INFO_PRUEBA, INFO_TEMA } from '../game/config'
+import { INFO_PRUEBA, INFO_TEMA, TEXTO_TIPO, TIEMPOS_POR_DEFECTO } from '../game/config'
 import { useTemporizador } from '../composables/useTemporizador'
 import { usePartidaStore } from '../stores/partida'
 import CartaTapada from './CartaTapada.vue'
@@ -16,7 +16,12 @@ const prueba = computed(() => INFO_PRUEBA[casilla.value.prueba])
 const pistaUsada = computed(() => store.partida!.pistaUsada)
 const cambioUsado = computed(() => store.partida!.cambioUsado)
 
-const segundos = esPregunta.value ? store.partida!.tiempos.pregunta : store.partida!.tiempos.actuar
+const tiempos = store.partida!.tiempos
+const segundos = esPregunta.value
+  ? tiempos.pregunta
+  : carta.value.prueba === 'mimica'
+    ? (tiempos.mimica ?? TIEMPOS_POR_DEFECTO.mimica)
+    : tiempos.actuar
 const reloj = useTemporizador(segundos)
 
 const vista = ref(false)
@@ -113,6 +118,9 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
           <span v-if="carta.referencia" class="referencia">{{ carta.referencia }}</span>
         </span>
       </CartaTapada>
+      <p v-if="carta.prueba !== 'describir' && carta.tipo" class="tipo-carta">
+        Es {{ TEXTO_TIPO[carta.tipo] }}
+      </p>
       <p v-if="pistaUsada && carta.prueba !== 'describir'" class="pista-texto">
         <span class="etiqueta-pista">Pista</span> {{ carta.pista }}
       </p>
@@ -245,6 +253,14 @@ h1 {
   font-size: 1rem;
   color: var(--tinta-suave);
   line-height: 1.35;
+}
+
+.tipo-carta {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.35rem;
 }
 
 .pista-texto {

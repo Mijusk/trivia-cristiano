@@ -52,13 +52,14 @@ Cada tarjeta lleva `tema` (`pentateuco`, `historicos`, `profetas`, `nt`), `nivel
 | Archivo | Campos |
 |---|---|
 | `preguntas.json` | `pregunta`, `respuesta`, `opciones` (siempre 3, una es la respuesta) |
-| `dibujar.json` / `mimica.json` | `adivinar` (lo que hay que decir, máx. 3 palabras), `escena` (ayuda para quien actúa), `pista` |
+| `dibujar.json` / `mimica.json` | `adivinar` (lo que hay que decir, máx. 3 palabras), `escena` (ayuda para quien actúa), `pista`; en mímica también `tipo` (`animal`, `personaje`, `objeto`, `escena`), que se muestra a todos |
 | `describir.json` | `palabra`, `prohibidas` (vacío en peques, 3 o más en el resto) |
 
 Criterios:
 
 - **Peques:** historias de una Biblia infantil. **Media:** lo que conoce alguien que va a la iglesia. **Experta:** detalles, pero que se puedan deducir con la pista.
 - Cada pregunta da contexto de la historia; nada de datos sueltos.
+- Mímica: si para explicarla hace falta hablar, no sirve. Peques son animales y objetos; Media, personajes con su gesto famoso; Experta, escenas y parábolas.
 
 Después de editar, ejecuta `npm run check:cards`.
 

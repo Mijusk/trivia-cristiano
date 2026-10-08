@@ -40,6 +40,7 @@ const store = usePartidaStore()
       </ul>
       <p>
         En dibujar, describir y mímica solo vale si tu pareja dice exactamente lo que pone en grande en la carta.
+        En mímica todos ven si es un animal, un personaje, un objeto o una escena.
         Las preguntas, los dibujos y las mímicas tienen una pista, y en cada turno se puede cambiar de carta una vez.
       </p>
       <p class="nota">Para dibujar necesitaréis papel y boli.</p>
