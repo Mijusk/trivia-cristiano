@@ -5,6 +5,7 @@ import {
   INFO_TEMA,
   PENALIZACION,
   SEGUNDOS_LECTURA,
+  SEGUNDOS_PARA_CAMBIAR,
   SEGUNDOS_MINIMOS,
   TEXTO_TIPO,
   TIEMPOS_POR_DEFECTO,
@@ -56,6 +57,24 @@ const autoArranque = esPregunta.value && nivelPareja !== 'peques'
 const lectura = ref(autoArranque ? SEGUNDOS_LECTURA : 0)
 let cuentaLectura: ReturnType<typeof setInterval> | undefined
 
+/*
+ * Cambiar de carta: en peques, gratis y antes de empezar el reloj; en media y
+ * experta, durante los primeros segundos desde que aparece la carta.
+ */
+const conVentana = nivelPareja !== 'peques'
+const quedaParaCambiar = ref(conVentana ? SEGUNDOS_PARA_CAMBIAR : 0)
+let cuentaCambio: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (conVentana) {
+    cuentaCambio = setInterval(() => {
+      quedaParaCambiar.value--
+      if (quedaParaCambiar.value <= 0) clearInterval(cuentaCambio)
+    }, 1000)
+  }
+})
+onBeforeUnmount(() => clearInterval(cuentaCambio))
+
 onMounted(() => {
   if (store.partida!.cambioUsado) avisarRestado(segundos - inicial)
   if (!autoArranque) return
@@ -94,7 +113,11 @@ const textoBotonPista = computed(() => {
   const base = !esPregunta.value ? 'Pista' : esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
   return costePista > 0 ? `${base} (−${costePista} s)` : base
 })
-const textoBotonCambio = costeCambio > 0 ? `Cambiar carta (−${costeCambio} s, 1 por turno)` : 'Cambiar carta (1 por turno)'
+const textoBotonCambio = costeCambio > 0 ? `Cambiar carta (−${costeCambio} s)` : 'Cambiar carta (1 por turno)'
+const puedeCambiar = computed(() => {
+  if (cambioUsado.value || respuestaVisible.value) return false
+  return conVentana ? quedaParaCambiar.value > 0 : !haEmpezado.value
+})
 const pistaDisponible = computed(() => tienePista.value && !pistaUsada.value && !respuestaVisible.value)
 
 function pedirPista() {
@@ -243,8 +266,9 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
 
       <div class="extras">
         <button v-if="pistaDisponible" class="btn-texto" @click="pedirPista">{{ textoBotonPista }}</button>
-        <button v-if="!haEmpezado && !cambioUsado" class="btn-texto" @click="store.otraCarta()">
+        <button v-if="puedeCambiar" class="btn-texto cambiar" @click="store.otraCarta()">
           {{ textoBotonCambio }}
+          <small v-if="conVentana">{{ quedaParaCambiar }} s para decidir</small>
         </button>
       </div>
       <p v-if="store.partida?.cartaDeOtroTema" class="nota">
@@ -396,6 +420,13 @@ h1 {
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
   pointer-events: none;
   animation: restar 1.4s ease-out forwards;
+}
+
+.cambiar small {
+  display: block;
+  font-size: 0.8rem;
+  text-decoration: none;
+  opacity: 0.8;
 }
 
 .lectura {

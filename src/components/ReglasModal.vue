@@ -64,7 +64,8 @@ function cerrarSiFondo(e: MouseEvent) {
         <h3>Ayudas</h3>
         <p>
           Las preguntas, los dibujos y las mímicas tienen una pista por carta. En cada turno podéis cambiar de carta
-          una vez, siempre antes de que empiece el reloj.
+          una vez: en Peques, antes de empezar el reloj; en Media y Experta, durante los primeros 15 segundos desde
+          que aparece la carta. La carta nueva empieza con su tiempo menos la penalización.
         </p>
         <p>
           Las ayudas cuestan tiempo según el nivel de la pareja: en Media, cambiar de carta quita un 20&nbsp;% y la

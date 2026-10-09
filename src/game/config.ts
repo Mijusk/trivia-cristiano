@@ -49,6 +49,9 @@ export const PENALIZACION: Record<Nivel, { cambio: number; pista: number }> = {
 /** Por muchas ayudas que se pidan, el reloj nunca baja de aquí. */
 export const SEGUNDOS_MINIMOS = 5
 
+/** En media y experta se puede cambiar de carta durante este tiempo desde que aparece. */
+export const SEGUNDOS_PARA_CAMBIAR = 15
+
 /** En las preguntas de media y experta el reloj arranca solo tras este tiempo de lectura. */
 export const SEGUNDOS_LECTURA = 3
 
