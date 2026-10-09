@@ -36,6 +36,22 @@ export const INFO_MODO: Record<Modo, { nombre: string; descripcion: string }> = 
 
 export const TIEMPOS_POR_DEFECTO = { pregunta: 30, actuar: 60, mimica: 90 }
 
+/**
+ * Tiempo que cuesta cada ayuda, en fracción del tiempo total de la carta.
+ * Depende del nivel de la pareja que juega; los peques no pagan nada.
+ */
+export const PENALIZACION: Record<Nivel, { cambio: number; pista: number }> = {
+  peques: { cambio: 0, pista: 0 },
+  media: { cambio: 0.2, pista: 0.15 },
+  experta: { cambio: 0.3, pista: 0.2 },
+}
+
+/** Por muchas ayudas que se pidan, el reloj nunca baja de aquí. */
+export const SEGUNDOS_MINIMOS = 5
+
+/** En las preguntas de media y experta el reloj arranca solo tras este tiempo de lectura. */
+export const SEGUNDOS_LECTURA = 3
+
 /** Cómo se anuncia el tipo de carta en voz alta: «Es un animal». */
 export const TEXTO_TIPO: Record<TipoCarta, string> = {
   animal: 'un animal',

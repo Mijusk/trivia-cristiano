@@ -2,9 +2,9 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { sonido } from '../audio/sonido'
 
 /** Cuenta atrás basada en la hora real, para que no se desvíe si el móvil va lento. */
-export function useTemporizador(segundos: number) {
+export function useTemporizador(segundos: number, inicial = segundos) {
   const total = ref(segundos)
-  const restanteMs = ref(segundos * 1000)
+  const restanteMs = ref(inicial * 1000)
   const enMarcha = ref(false)
   const terminado = ref(false)
   let finEn = 0
@@ -46,6 +46,19 @@ export function useTemporizador(segundos: number) {
     intervalo = undefined
   }
 
+  /**
+   * Quita segundos (por una ayuda), sin bajar de `minimo`. Funciona con el
+   * reloj parado o en marcha. Devuelve los segundos que se han quitado de verdad.
+   */
+  function restar(seg: number, minimo: number) {
+    const limite = Math.min(restanteMs.value, minimo * 1000)
+    const nuevo = Math.max(limite, restanteMs.value - seg * 1000)
+    const quitado = restanteMs.value - nuevo
+    restanteMs.value = nuevo
+    if (enMarcha.value) finEn -= quitado
+    return Math.round(quitado / 1000)
+  }
+
   function reiniciar(nuevos = total.value) {
     parar()
     total.value = nuevos
@@ -55,5 +68,5 @@ export function useTemporizador(segundos: number) {
 
   onBeforeUnmount(parar)
 
-  return { restante, fraccion, enMarcha, terminado, empezar, parar, reiniciar }
+  return { restante, fraccion, enMarcha, terminado, empezar, parar, reiniciar, restar }
 }

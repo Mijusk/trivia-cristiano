@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { INFO_PRUEBA, INFO_TEMA, TEXTO_TIPO, TIEMPOS_POR_DEFECTO, resaltarClaves } from '../game/config'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import {
+  INFO_PRUEBA,
+  INFO_TEMA,
+  PENALIZACION,
+  SEGUNDOS_LECTURA,
+  SEGUNDOS_MINIMOS,
+  TEXTO_TIPO,
+  TIEMPOS_POR_DEFECTO,
+  resaltarClaves,
+} from '../game/config'
 import { useTemporizador } from '../composables/useTemporizador'
 import { usePartidaStore } from '../stores/partida'
 import CartaTapada from './CartaTapada.vue'
@@ -23,7 +32,42 @@ const segundos = esPregunta.value
   : carta.value.prueba === 'mimica'
     ? (tiempos.mimica ?? TIEMPOS_POR_DEFECTO.mimica)
     : tiempos.actuar
-const reloj = useTemporizador(segundos)
+
+/* Coste de las ayudas según el nivel de la pareja que juega (en peques es 0). */
+const nivelPareja = store.parejaActual!.nivel
+const costeCambio = Math.round(segundos * PENALIZACION[nivelPareja].cambio)
+const costePista = Math.round(segundos * PENALIZACION[nivelPareja].pista)
+
+// Si esta carta viene de un cambio (o se recarga con la pista ya pedida), empieza con menos tiempo.
+const inicial = Math.max(
+  SEGUNDOS_MINIMOS,
+  segundos - (store.partida!.cambioUsado ? costeCambio : 0) - (store.partida!.pistaUsada ? costePista : 0),
+)
+const reloj = useTemporizador(segundos, inicial)
+
+/* Aviso «−9 s» que salta del reloj al pagar una ayuda. */
+const restado = ref<{ id: number; seg: number } | null>(null)
+function avisarRestado(seg: number) {
+  if (seg > 0) restado.value = { id: Date.now(), seg }
+}
+
+/* En media y experta, las preguntas arrancan solas tras unos segundos de lectura. */
+const autoArranque = esPregunta.value && nivelPareja !== 'peques'
+const lectura = ref(autoArranque ? SEGUNDOS_LECTURA : 0)
+let cuentaLectura: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  if (store.partida!.cambioUsado) avisarRestado(segundos - inicial)
+  if (!autoArranque) return
+  cuentaLectura = setInterval(() => {
+    lectura.value--
+    if (lectura.value <= 0) {
+      clearInterval(cuentaLectura)
+      if (!respuestaVisible.value) reloj.empezar()
+    }
+  }, 1000)
+})
+onBeforeUnmount(() => clearInterval(cuentaLectura))
 
 const vista = ref(false)
 const respuestaVisible = ref(false)
@@ -47,13 +91,15 @@ const opcionQuitada = computed(() => {
 /* Dibujar y mímica tienen pista; en describir no hace falta porque quien describe puede hablar. */
 const tienePista = computed(() => carta.value.prueba !== 'describir')
 const textoBotonPista = computed(() => {
-  if (!esPregunta.value) return 'Pista'
-  return esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
+  const base = !esPregunta.value ? 'Pista' : esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
+  return costePista > 0 ? `${base} (−${costePista} s)` : base
 })
+const textoBotonCambio = costeCambio > 0 ? `Cambiar carta (−${costeCambio} s, 1 por turno)` : 'Cambiar carta (1 por turno)'
 const pistaDisponible = computed(() => tienePista.value && !pistaUsada.value && !respuestaVisible.value)
 
 function pedirPista() {
   store.usarPista()
+  avisarRestado(reloj.restar(costePista, SEGUNDOS_MINIMOS))
   sonido.pista()
 }
 
@@ -65,6 +111,8 @@ function resolver(acertada: boolean) {
 }
 
 function verRespuesta() {
+  clearInterval(cuentaLectura)
+  lectura.value = 0
   reloj.parar()
   respuestaVisible.value = true
 }
@@ -153,16 +201,26 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       </p>
     </template>
 
-    <Temporizador
-      :restante="reloj.restante.value"
-      :fraccion="reloj.fraccion.value"
-      :terminado="reloj.terminado.value"
-      :en-marcha="reloj.enMarcha.value"
-    />
+    <div class="reloj">
+      <Temporizador
+        :restante="reloj.restante.value"
+        :fraccion="reloj.fraccion.value"
+        :terminado="reloj.terminado.value"
+        :en-marcha="reloj.enMarcha.value"
+      />
+      <span v-if="restado" :key="restado.id" class="restado" aria-live="polite">−{{ restado.seg }} s</span>
+    </div>
 
     <div class="acciones">
       <template v-if="esPregunta">
-        <button v-if="!reloj.enMarcha.value && !respuestaVisible && !reloj.terminado.value" class="btn btn-secundario btn-bloque" @click="reloj.empezar()">
+        <p v-if="lectura > 0 && !respuestaVisible" class="lectura" aria-live="polite">
+          Leed la pregunta: el tiempo empieza en {{ lectura }}…
+        </p>
+        <button
+          v-else-if="!autoArranque && !reloj.enMarcha.value && !respuestaVisible && !reloj.terminado.value"
+          class="btn btn-secundario btn-bloque"
+          @click="reloj.empezar()"
+        >
           Empezar tiempo
         </button>
         <button v-if="!respuestaVisible" class="btn btn-principal btn-bloque" @click="verRespuesta">Ver respuesta</button>
@@ -186,7 +244,7 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       <div class="extras">
         <button v-if="pistaDisponible" class="btn-texto" @click="pedirPista">{{ textoBotonPista }}</button>
         <button v-if="!haEmpezado && !cambioUsado" class="btn-texto" @click="store.otraCarta()">
-          Cambiar carta (1 por turno)
+          {{ textoBotonCambio }}
         </button>
       </div>
       <p v-if="store.partida?.cartaDeOtroTema" class="nota">
@@ -321,6 +379,45 @@ h1 {
   background: var(--tema-profetas);
   color: var(--tinta);
   font-size: 0.85rem;
+}
+
+.reloj {
+  position: relative;
+}
+
+.restado {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--fallo);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  animation: restar 1.4s ease-out forwards;
+}
+
+.lectura {
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--sobre-mesa-suave);
+}
+
+@keyframes restar {
+  0% {
+    opacity: 0;
+    transform: translate(10px, 10px) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(46px, -6px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(60px, -40px) scale(1);
+  }
 }
 
 .extras {

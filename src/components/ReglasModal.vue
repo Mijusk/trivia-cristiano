@@ -64,8 +64,13 @@ function cerrarSiFondo(e: MouseEvent) {
         <h3>Ayudas</h3>
         <p>
           Las preguntas, los dibujos y las mímicas tienen una pista por carta. En cada turno podéis cambiar de carta
-          una vez.
+          una vez, siempre antes de que empiece el reloj.
         </p>
+        <p>
+          Las ayudas cuestan tiempo según el nivel de la pareja: en Media, cambiar de carta quita un 20&nbsp;% y la
+          pista un 15&nbsp;%; en Experta, un 30&nbsp;% y un 20&nbsp;%. En Peques son gratis.
+        </p>
+        <p>En las preguntas de Media y Experta el reloj arranca solo tras 3 segundos para leer.</p>
         <p class="suave">Para dibujar necesitaréis papel y boli.</p>
       </section>
 
