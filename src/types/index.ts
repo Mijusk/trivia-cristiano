@@ -49,6 +49,8 @@ export interface CartaDescribir extends CartaBase {
   prueba: 'describir'
   palabra: string
   prohibidas: string[]
+  /** Ideas para quien describe; solo la ve esa persona, dentro de la carta tapada. */
+  pista: string
 }
 
 export interface CartaMimica extends CartaActuar {

@@ -13,6 +13,15 @@ const fallo = (msg) => {
   console.error('✗', msg)
 }
 
+/** Minúsculas, sin tildes y sin signos, para comparar palabras sueltas. */
+const normalizar = (s) =>
+  s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-zñ0-9]+/g, ' ')
+    .trim()
+
 const tabla = {}
 for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
   const cartas = JSON.parse(readFileSync(new URL(`../src/data/${archivo}.json`, import.meta.url), 'utf8'))
@@ -50,6 +59,13 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
       if (!Array.isArray(c.prohibidas)) fallo(`${donde}: faltan las palabras prohibidas`)
       else if (c.nivel === 'peques' && c.prohibidas.length) fallo(`${donde}: en peques no hay palabras prohibidas`)
       else if (c.nivel !== 'peques' && c.prohibidas.length < 3) fallo(`${donde}: necesita al menos 3 palabras prohibidas`)
+      // La pista es para quien describe: no puede regalarle la palabra ni las prohibidas.
+      if (!c.pista) fallo(`${donde}: falta la pista para quien describe`)
+      else {
+        const pista = ` ${normalizar(c.pista)} `
+        for (const w of [c.palabra, ...(c.prohibidas ?? [])])
+          if (pista.includes(` ${normalizar(w)} `)) fallo(`${donde}: la pista usa «${w}»`)
+      }
     }
     const clave = `${c.tema}|${prueba}|${c.nivel}`
     tabla[clave] = (tabla[clave] ?? 0) + 1

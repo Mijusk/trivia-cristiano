@@ -52,41 +52,54 @@ function avisarRestado(seg: number) {
   if (seg > 0) restado.value = { id: Date.now(), seg }
 }
 
-/* En media y experta, las preguntas arrancan solas tras unos segundos de lectura. */
-const autoArranque = esPregunta.value && nivelPareja !== 'peques'
-const lectura = ref(autoArranque ? SEGUNDOS_LECTURA : 0)
+/*
+ * En media y experta el reloj arranca solo tras unos segundos de lectura: en las
+ * preguntas, desde que aparece la carta; en las tapadas, desde que quien actúa
+ * la mira por primera vez. En peques se arranca con el botón.
+ */
+const conVentana = nivelPareja !== 'peques'
+const autoArranque = conVentana
+const lectura = ref(0)
 let cuentaLectura: ReturnType<typeof setInterval> | undefined
 
 /*
  * Cambiar de carta: en peques, gratis y antes de empezar el reloj; en media y
- * experta, durante los primeros segundos desde que aparece la carta.
+ * experta, durante los primeros segundos (contados desde el mismo momento).
  */
-const conVentana = nivelPareja !== 'peques'
 const quedaParaCambiar = ref(conVentana ? SEGUNDOS_PARA_CAMBIAR : 0)
 let cuentaCambio: ReturnType<typeof setInterval> | undefined
 
-onMounted(() => {
+/** Ya se ha visto la carta: arrancan la lectura y la ventana para cambiar. */
+const yaVista = ref(false)
+function cartaVista() {
+  if (yaVista.value) return
+  yaVista.value = true
   if (conVentana) {
     cuentaCambio = setInterval(() => {
       quedaParaCambiar.value--
       if (quedaParaCambiar.value <= 0) clearInterval(cuentaCambio)
     }, 1000)
   }
-})
-onBeforeUnmount(() => clearInterval(cuentaCambio))
-
-onMounted(() => {
-  if (store.partida!.cambioUsado) avisarRestado(segundos - inicial)
   if (!autoArranque) return
+  lectura.value = SEGUNDOS_LECTURA
   cuentaLectura = setInterval(() => {
     lectura.value--
     if (lectura.value <= 0) {
       clearInterval(cuentaLectura)
-      if (!respuestaVisible.value) reloj.empezar()
+      if (!respuestaVisible.value && !reloj.enMarcha.value && !reloj.terminado.value) reloj.empezar()
     }
   }, 1000)
+}
+
+onMounted(() => {
+  if (store.partida!.cambioUsado) avisarRestado(segundos - inicial)
+  // La pregunta la ve toda la pareja en cuanto aparece.
+  if (esPregunta.value) cartaVista()
 })
-onBeforeUnmount(() => clearInterval(cuentaLectura))
+onBeforeUnmount(() => {
+  clearInterval(cuentaLectura)
+  clearInterval(cuentaCambio)
+})
 
 const vista = ref(false)
 const respuestaVisible = ref(false)
@@ -107,18 +120,19 @@ const opcionQuitada = computed(() => {
   return falsas[semilla % falsas.length] ?? null
 })
 
-/* Dibujar y mímica tienen pista; en describir no hace falta porque quien describe puede hablar. */
-const tienePista = computed(() => carta.value.prueba !== 'describir')
-const textoBotonPista = computed(() => {
-  const base = !esPregunta.value ? 'Pista' : esPeques.value ? 'Pista: quitar una opción' : 'Pista: ver opciones'
-  return costePista > 0 ? `${base} (−${costePista} s)` : base
-})
-const textoBotonCambio = costeCambio > 0 ? `Cambiar carta (−${costeCambio} s)` : 'Cambiar carta (1 por turno)'
+/*
+ * Todas las cartas tienen pista. En dibujar y mímica se lee en voz alta para
+ * quien adivina; en describir es para quien describe y sale dentro de la carta tapada.
+ */
+const esDescribir = computed(() => carta.value.prueba === 'describir')
+const textoBotonPista = computed(() =>
+  esDescribir.value ? 'Ideas para describir' : esPregunta.value ? (esPeques.value ? 'Quitar una opción' : 'Ver opciones') : 'Pista',
+)
 const puedeCambiar = computed(() => {
   if (cambioUsado.value || respuestaVisible.value) return false
   return conVentana ? quedaParaCambiar.value > 0 : !haEmpezado.value
 })
-const pistaDisponible = computed(() => tienePista.value && !pistaUsada.value && !respuestaVisible.value)
+const pistaDisponible = computed(() => !pistaUsada.value && !respuestaVisible.value)
 
 function pedirPista() {
   store.usarPista()
@@ -131,6 +145,11 @@ function resolver(acertada: boolean) {
   if (store.partida?.fase === 'victoria') sonido.victoria()
   else if (acertada) sonido.acierto()
   else sonido.fallo()
+}
+
+function verla() {
+  vista.value = true
+  cartaVista()
 }
 
 function verRespuesta() {
@@ -151,9 +170,18 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
   <section class="fase-carta" :style="{ '--color-tema': colorTema }">
     <header class="cabecera">
       <span class="icono" aria-hidden="true">{{ prueba.icono }}</span>
-      <div>
+      <div class="titulos">
         <h1>{{ prueba.nombre }}</h1>
         <p class="tema">{{ INFO_TEMA[casilla.tema].nombre }}</p>
+      </div>
+      <div class="reloj">
+        <Temporizador
+          :restante="reloj.restante.value"
+          :fraccion="reloj.fraccion.value"
+          :terminado="reloj.terminado.value"
+          :en-marcha="reloj.enMarcha.value"
+        />
+        <span v-if="restado" :key="restado.id" class="restado" aria-live="polite">−{{ restado.seg }} s</span>
       </div>
     </header>
 
@@ -189,7 +217,7 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
         <template v-if="carta.prueba === 'dibujar'">Tu pareja tiene que decir las palabras resaltadas.</template>
         <template v-else>Tu pareja tiene que decir lo que pone en grande.</template>
       </p>
-      <CartaTapada :color="colorTema" @vista="vista = true">
+      <CartaTapada :color="colorTema" @vista="verla">
         <span class="contenido-tapado">
           <template v-if="carta.prueba === 'describir'">
             <strong class="palabra">{{ carta.palabra }}</strong>
@@ -198,6 +226,10 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
               <span class="lista-prohibidas">
                 <span v-for="w in carta.prohibidas" :key="w">{{ w }}</span>
               </span>
+            </span>
+            <span v-if="pistaUsada" class="ideas">
+              <span class="etiqueta-pista">Ideas</span>
+              {{ carta.pista }}
             </span>
           </template>
           <template v-else-if="carta.prueba === 'dibujar'">
@@ -222,25 +254,30 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       <p v-if="pistaUsada && carta.prueba !== 'describir'" class="pista-texto">
         <span class="etiqueta-pista">Pista</span> {{ carta.pista }}
       </p>
+      <p v-if="pistaUsada && esDescribir" class="nota-ideas">Las ideas salen dentro de la carta: mantenla pulsada.</p>
     </template>
 
-    <div class="reloj">
-      <Temporizador
-        :restante="reloj.restante.value"
-        :fraccion="reloj.fraccion.value"
-        :terminado="reloj.terminado.value"
-        :en-marcha="reloj.enMarcha.value"
-      />
-      <span v-if="restado" :key="restado.id" class="restado" aria-live="polite">−{{ restado.seg }} s</span>
-    </div>
-
     <div class="acciones">
+      <!-- Ayudas, justo encima del botón principal -->
+      <div v-if="pistaDisponible || puedeCambiar" class="chips">
+        <button v-if="pistaDisponible" type="button" class="chip" @click="pedirPista">
+          <span aria-hidden="true">💡</span> {{ textoBotonPista }}
+          <small v-if="costePista > 0">−{{ costePista }} s</small>
+        </button>
+        <button v-if="puedeCambiar" type="button" class="chip" @click="store.otraCarta()">
+          <span aria-hidden="true">🔄</span> Cambiar carta
+          <small v-if="conVentana">−{{ costeCambio }} s · quedan {{ quedaParaCambiar }} s</small>
+          <small v-else>1 por turno</small>
+        </button>
+      </div>
+
+      <p v-if="lectura > 0 && !respuestaVisible" class="lectura" aria-live="polite">
+        {{ esPregunta ? 'Leed la pregunta: el' : 'El' }} tiempo empieza en {{ lectura }}…
+      </p>
+
       <template v-if="esPregunta">
-        <p v-if="lectura > 0 && !respuestaVisible" class="lectura" aria-live="polite">
-          Leed la pregunta: el tiempo empieza en {{ lectura }}…
-        </p>
         <button
-          v-else-if="!autoArranque && !reloj.enMarcha.value && !respuestaVisible && !reloj.terminado.value"
+          v-if="!autoArranque && !reloj.enMarcha.value && !respuestaVisible && !reloj.terminado.value"
           class="btn btn-secundario btn-bloque"
           @click="reloj.empezar()"
         >
@@ -250,13 +287,14 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       </template>
       <template v-else>
         <button
-          v-if="!reloj.enMarcha.value && !reloj.terminado.value"
+          v-if="!autoArranque && !reloj.enMarcha.value && !reloj.terminado.value"
           class="btn btn-principal btn-bloque"
           :disabled="!vista"
           @click="reloj.empezar()"
         >
           {{ vista ? 'Empezar tiempo' : 'Primero mira la carta' }}
         </button>
+        <p v-else-if="autoArranque && !vista" class="lectura">Mantén pulsada la carta: el tiempo empieza {{ SEGUNDOS_LECTURA }} s después.</p>
       </template>
 
       <div v-if="puedeResolver && (esPregunta || haEmpezado)" class="acciones-fila">
@@ -264,13 +302,6 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
         <button class="btn btn-acierto" @click="resolver(true)">{{ esPregunta ? 'Acertada' : '¡Adivinado!' }}</button>
       </div>
 
-      <div class="extras">
-        <button v-if="pistaDisponible" class="btn-texto" @click="pedirPista">{{ textoBotonPista }}</button>
-        <button v-if="puedeCambiar" class="btn-texto cambiar" @click="store.otraCarta()">
-          {{ textoBotonCambio }}
-          <small v-if="conVentana">{{ quedaParaCambiar }} s para decidir</small>
-        </button>
-      </div>
       <p v-if="store.partida?.cartaDeOtroTema" class="nota">
         No quedaban cartas de este tema para vuestro nivel, así que sale una de otro. El quesito cuenta igual.
       </p>
@@ -283,20 +314,39 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .cabecera {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+.titulos {
+  flex: 1;
+  min-width: 0;
+}
+
+/* El reloj va en la cabecera, a la derecha, para que todo quepa sin hacer scroll. */
+.cabecera .reloj :deep(.temporizador) {
+  width: 78px;
+  height: 78px;
+}
+
+.cabecera .reloj :deep(.numero) {
+  font-size: 1.6rem;
+}
+
+.cabecera .reloj :deep(.terminado .numero) {
+  font-size: 0.85rem;
 }
 
 .cabecera .icono {
   display: grid;
   place-items: center;
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
   flex: none;
   border-radius: 50%;
   background: var(--color-tema);
@@ -305,7 +355,7 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
 }
 
 h1 {
-  font-size: 1.9rem;
+  font-size: 1.7rem;
 }
 
 .tema {
@@ -314,7 +364,7 @@ h1 {
 }
 
 .carta-pregunta {
-  padding: 22px 20px;
+  padding: 18px 18px;
   border-top: 10px solid var(--color-tema);
 }
 
@@ -383,7 +433,16 @@ h1 {
   text-align: center;
   font-family: var(--fuente-titulo);
   font-weight: 800;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
+}
+
+/* Carta tapada algo más baja en móviles pequeños */
+@media (max-height: 760px) {
+  .fase-carta :deep(.carta-tapada),
+  .fase-carta :deep(.dorso),
+  .fase-carta :deep(.cara) {
+    min-height: 180px;
+  }
 }
 
 .pista-texto {
@@ -407,12 +466,13 @@ h1 {
 
 .reloj {
   position: relative;
+  flex: none;
 }
 
 .restado {
   position: absolute;
-  left: 50%;
-  top: 30%;
+  right: 70%;
+  top: 20%;
   font-family: var(--fuente-titulo);
   font-weight: 800;
   font-size: 1.5rem;
@@ -422,11 +482,62 @@ h1 {
   animation: restar 1.4s ease-out forwards;
 }
 
-.cambiar small {
-  display: block;
-  font-size: 0.8rem;
-  text-decoration: none;
+/* Ayudas en forma de chip, encima del botón principal */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chip {
+  flex: 1 1 140px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px 6px;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 2px solid color-mix(in srgb, var(--sobre-mesa) 30%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--sobre-mesa) 8%, transparent);
+  color: var(--sobre-mesa);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+.chip:active {
+  transform: scale(0.97);
+  background: color-mix(in srgb, var(--sobre-mesa) 16%, transparent);
+}
+
+.chip small {
+  font-family: var(--fuente-texto);
+  font-weight: 600;
+  font-size: 0.78rem;
   opacity: 0.8;
+}
+
+.ideas {
+  max-width: 32ch;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tema-profetas) 22%, transparent);
+  font-size: 0.98rem;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.nota-ideas {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--sobre-mesa-suave);
 }
 
 .lectura {
@@ -443,19 +554,12 @@ h1 {
   }
   20% {
     opacity: 1;
-    transform: translate(46px, -6px) scale(1.1);
+    transform: translate(-6px, 0) scale(1.1);
   }
   100% {
     opacity: 0;
-    transform: translate(60px, -40px) scale(1);
+    transform: translate(-16px, 34px) scale(1);
   }
-}
-
-.extras {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 4px 20px;
 }
 
 .respuesta {
@@ -481,6 +585,8 @@ h1 {
 .instruccion {
   margin: 0;
   color: var(--sobre-mesa-suave);
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .contenido-tapado {
