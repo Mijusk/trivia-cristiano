@@ -10,7 +10,7 @@ Juego de mesa bíblico por parejas que se juega entero desde un móvil o tablet 
   - Temas: 🟩 Pentateuco · 🟦 Históricos · 🟨 Profetas y Sapienciales · 🟥 Nuevo Testamento
   - Pruebas: ❓ Pregunta · ✏️ Dibujar (en papel) · 🗣️ Describir · 🎭 Mímica
 - En Dibujar, Describir y Mímica la carta sale tapada: solo la ve quien actúa (mantener pulsado). En Describir y Mímica solo vale si la pareja dice exactamente lo que pone en grande; en Dibujar basta con decir las palabras resaltadas.
-- Cada carta tiene una pista (menos Describir): en las preguntas de Peques quita una opción falsa; en el resto de niveles muestra tres opciones. En Dibujar y Mímica da una pequeña ayuda en voz alta.
+- Cada carta tiene una pista: en las preguntas de Peques quita una opción falsa; en el resto de niveles muestra tres opciones. En Dibujar y Mímica da una pequeña ayuda en voz alta. En Describir son ideas para quien describe, dentro de la carta tapada.
 - Se puede cambiar de carta una vez por turno.
 - Si aciertan, ganan ese quesito. Acierten o no, pasa el turno.
 - Gana la primera pareja que completa los cuatro temas. La duración se elige al empezar:
@@ -54,7 +54,7 @@ Cada tarjeta lleva `tema` (`pentateuco`, `historicos`, `profetas`, `nt`), `nivel
 | `preguntas.json` | `pregunta`, `respuesta`, `opciones` (siempre 3, una es la respuesta) |
 | `dibujar.json` | `adivinar` (la situación), `claves` (1 o 2 palabras de `adivinar` que basta con decir), `tipo`, `escena` (qué dibujar), `pista` |
 | `mimica.json` | `adivinar` (lo que hay que decir, máx. 3 palabras), `tipo`, `escena` (ayuda para quien actúa), `pista` |
-| `describir.json` | `palabra`, `prohibidas` (vacío en peques, 3 o más en el resto) |
+| `describir.json` | `palabra`, `prohibidas` (vacío en peques, 3 o más en el resto), `pista` (ideas para quien describe; no puede usar la palabra ni las prohibidas) |
 
 Criterios:
 
