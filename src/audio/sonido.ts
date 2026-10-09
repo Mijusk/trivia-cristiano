@@ -101,6 +101,44 @@ function pararMusica() {
   ganancia = null
 }
 
+/* ---------- Cajita de música del regalo ---------- */
+
+let cajitaIntervalo: ReturnType<typeof setInterval> | undefined
+let cajitaGanancia: GainNode | null = null
+
+function empezarCajita() {
+  if (!sonidoActivado.value || cajitaIntervalo) return
+  const m = asegurar()
+  if (!m || !ctx) return
+  cajitaGanancia = ctx.createGain()
+  cajitaGanancia.gain.setValueAtTime(0, ctx.currentTime)
+  cajitaGanancia.gain.linearRampToValueAtTime(1, ctx.currentTime + 1.5)
+  cajitaGanancia.connect(m.bus)
+  const motorCajita: fx.Motor = { ctx, bus: cajitaGanancia, master: m.master }
+  let t = ctx.currentTime + 0.1
+  let n = 0
+  cajitaIntervalo = setInterval(() => {
+    if (!ctx) return
+    while (t < ctx.currentTime + 0.4) {
+      fx.pasoCajita(motorCajita, t, n++)
+      t += fx.PULSO_CAJITA
+    }
+  }, 120)
+}
+
+function pararCajita() {
+  if (cajitaIntervalo) clearInterval(cajitaIntervalo)
+  cajitaIntervalo = undefined
+  if (cajitaGanancia && ctx) {
+    const g = cajitaGanancia
+    g.gain.cancelScheduledValues(ctx.currentTime)
+    g.gain.setValueAtTime(g.gain.value, ctx.currentTime)
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 1)
+    setTimeout(() => g.disconnect(), 1400)
+  }
+  cajitaGanancia = null
+}
+
 /* ---------- API para el juego ---------- */
 
 export const sonido = {
@@ -109,9 +147,12 @@ export const sonido = {
     if (sonidoActivado.value) asegurar()
   },
 
-  /** Primer toque en la portada: suena el arpa de entrada y arranca la música. */
-  entrar() {
-    if (haSonadoEntrada) return
+  /**
+   * Primer toque en la portada: suena el arpa de entrada y arranca la música.
+   * Con `forzar`, suena aunque ya hubiera sonado (al volver a abrir el regalo).
+   */
+  entrar(forzar = false) {
+    if (haSonadoEntrada && !forzar) return
     if (!sonidoActivado.value) return
     haSonadoEntrada = true
     tocar(fx.entrada)
@@ -127,6 +168,18 @@ export const sonido = {
     if (encendida && ctx) empezarMusica()
     if (!encendida) pararMusica()
   },
+
+  /** Cajita de música mientras se lee la dedicatoria del regalo. */
+  cajita(encendida: boolean) {
+    if (encendida) empezarCajita()
+    else pararCajita()
+  },
+  papel: () => tocar(fx.papel),
+  giroEtiqueta: () => tocar(fx.giroEtiqueta),
+  vuelo: () => tocar(fx.vuelo),
+  cinta: () => tocar(fx.cinta),
+  lazoSuelto: () => tocar(fx.lazoSuelto),
+  sobreAbre: () => tocar(fx.sobreAbre),
 
   tic: (intensidad = 1) => tocar((m, t) => fx.tic(m, t, intensidad)),
   ruletaPara: () => tocar(fx.ruletaPara),

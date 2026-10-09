@@ -66,3 +66,11 @@ Criterios:
 Después de editar, ejecuta `npm run check:cards`.
 
 Si en un tema no quedan cartas sin usar para el nivel de la pareja, el juego saca una de otro tema del mismo nivel y el quesito cuenta igual.
+
+## El regalo
+
+La primera vez que se abre el juego aparece un sobre con lazo y una etiqueta con una dedicatoria
+(`src/components/RegaloSobre.vue`). El texto está en `src/regalo/dedicatoria.ts`.
+
+- Sale solo la primera vez en cada navegador.
+- Para volver a verlo: abrir la web con `?regalo` al final, o mantener pulsado el logo de la portada un segundo.

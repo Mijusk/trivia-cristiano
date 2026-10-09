@@ -4,9 +4,19 @@ import { usePartidaStore } from '../stores/partida'
 import PortadaEscena from '../components/PortadaEscena.vue'
 import ReglasModal from '../components/ReglasModal.vue'
 import BotonSonido from '../components/BotonSonido.vue'
+import { volverAVerRegalo } from '../regalo/estado'
 
 const store = usePartidaStore()
 const reglasAbiertas = ref(false)
+
+// Mantener pulsado el logo un segundo vuelve a mostrar el regalo.
+let pulsacion: ReturnType<typeof setTimeout> | undefined
+function empezarPulsacion() {
+  pulsacion = setTimeout(volverAVerRegalo, 1000)
+}
+function cancelarPulsacion() {
+  clearTimeout(pulsacion)
+}
 </script>
 
 <template>
@@ -16,7 +26,16 @@ const reglasAbiertas = ref(false)
       <BotonSonido class="sonido" />
 
       <header class="titulo">
-        <svg class="logo" viewBox="-54 -54 108 108" aria-hidden="true">
+        <svg
+          class="logo"
+          viewBox="-54 -54 108 108"
+          aria-hidden="true"
+          @pointerdown="empezarPulsacion"
+          @pointerup="cancelarPulsacion"
+          @pointerleave="cancelarPulsacion"
+          @pointercancel="cancelarPulsacion"
+          @contextmenu.prevent
+        >
           <circle r="53" fill="var(--mesa)" stroke="var(--sobre-mesa)" stroke-width="3" />
           <path d="M0 0 L0 -50 A50 50 0 0 1 50 0 Z" fill="var(--tema-pentateuco)" />
           <path d="M0 0 L50 0 A50 50 0 0 1 0 50 Z" fill="var(--tema-historicos)" />
@@ -112,6 +131,7 @@ const reglasAbiertas = ref(false)
 }
 
 .logo {
+  -webkit-touch-callout: none;
   width: 64px;
   height: 64px;
   margin-bottom: 10px;

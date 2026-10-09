@@ -342,3 +342,100 @@ export function pasoMusica(m: Motor, t: number, paso: number) {
     arpa(m, n, t + PULSO_MUSICA * 0.5, { vol: 0.07, brillo: 0.3, pan: 0.5, cuerpo: 0 })
   }
 }
+
+/* ---------- El regalo ---------- */
+
+/** Ruido filtrado corto: base para papel y cinta. */
+function ruido(m: Motor, t: number, o: { dur: number; vol: number; desde: number; hasta: number; q?: number; pan?: number; panHasta?: number }) {
+  const { ctx } = m
+  const largo = Math.max(1, Math.floor(ctx.sampleRate * o.dur))
+  const buf = ctx.createBuffer(1, largo, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < largo; i++) d[i] = Math.random() * 2 - 1
+  const fuente = ctx.createBufferSource()
+  fuente.buffer = buf
+  const filtro = ctx.createBiquadFilter()
+  filtro.type = 'bandpass'
+  filtro.Q.value = o.q ?? 1.4
+  filtro.frequency.setValueAtTime(o.desde, t)
+  filtro.frequency.exponentialRampToValueAtTime(o.hasta, t + o.dur)
+  const g = ctx.createGain()
+  g.gain.setValueAtTime(0, t)
+  g.gain.linearRampToValueAtTime(o.vol, t + Math.min(0.02, o.dur * 0.3))
+  g.gain.linearRampToValueAtTime(0, t + o.dur)
+  const pan = ctx.createStereoPanner()
+  pan.pan.setValueAtTime(o.pan ?? 0, t)
+  if (o.panHasta !== undefined) pan.pan.linearRampToValueAtTime(o.panHasta, t + o.dur)
+  fuente.connect(filtro).connect(g).connect(pan).connect(m.bus)
+  fuente.start(t)
+}
+
+/** Roce de papel: unos cuantos crujidos suaves. */
+export function papel(m: Motor, t: number) {
+  for (let i = 0; i < 5; i++) {
+    const f = 1800 + Math.random() * 2200
+    ruido(m, t + i * 0.035 + Math.random() * 0.02, { dur: 0.04 + Math.random() * 0.04, vol: 0.05, desde: f, hasta: f * 0.8, q: 2.5 })
+  }
+}
+
+/** La etiqueta se da la vuelta: un soplo y dos campanitas que suben. */
+export function giroEtiqueta(m: Motor, t: number) {
+  ruido(m, t, { dur: 0.35, vol: 0.06, desde: 600, hasta: 2400, q: 1 })
+  campana(m, RE + 19, t + 0.18, 0.1, 1.8, -0.2)
+  campana(m, RE + 26, t + 0.32, 0.09, 2.2, 0.2)
+}
+
+/** La etiqueta sale volando hacia la derecha. */
+export function vuelo(m: Motor, t: number) {
+  ruido(m, t, { dur: 0.6, vol: 0.12, desde: 500, hasta: 3000, q: 1, pan: 0, panHasta: 0.9 })
+  arpa(m, RE + 14, t + 0.05, { vol: 0.12, brillo: 0.3, pan: 0.6, cuerpo: 0 })
+}
+
+/** Cinta que se desliza al tirar. */
+export function cinta(m: Motor, t: number) {
+  ruido(m, t, { dur: 0.45, vol: 0.07, desde: 2200, hasta: 700, q: 5 })
+}
+
+/** El lazo se suelta: un «pop» suave y una nota. */
+export function lazoSuelto(m: Motor, t: number) {
+  const { ctx } = m
+  const osc = ctx.createOscillator()
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(320, t)
+  osc.frequency.exponentialRampToValueAtTime(140, t + 0.12)
+  const g = ctx.createGain()
+  g.gain.setValueAtTime(0, t)
+  g.gain.linearRampToValueAtTime(0.22, t + 0.005)
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18)
+  osc.connect(g).connect(m.bus)
+  osc.start(t)
+  osc.stop(t + 0.2)
+  ruido(m, t, { dur: 0.5, vol: 0.06, desde: 1500, hasta: 500, q: 4 })
+  arpa(m, RE + 12, t + 0.08, { vol: 0.22, brillo: 0.35 })
+  arpa(m, RE + 19, t + 0.16, { vol: 0.18, brillo: 0.35 })
+}
+
+/** Se abre el sobre: papel y un soplo que sube. */
+export function sobreAbre(m: Motor, t: number) {
+  papel(m, t)
+  ruido(m, t + 0.1, { dur: 0.5, vol: 0.07, desde: 500, hasta: 2600, q: 1 })
+}
+
+/**
+ * Cajita de música para leer la dedicatoria: una melodía sencilla y original
+ * en re mayor, con timbre de campanita, que suena muy bajito.
+ */
+const MELODIA_CAJITA: (number | null)[] = [
+  74, 78, 81, 86, 85, 81, 78, 81,
+  79, 83, 86, 83, 81, 78, 76, null,
+  74, 78, 81, 86, 88, 86, 85, 81,
+  83, 81, 79, 76, 74, null, null, null,
+]
+const BAJOS_CAJITA = [62, 59, 55, 57]
+export const PULSO_CAJITA = 0.36
+
+export function pasoCajita(m: Motor, t: number, paso: number) {
+  const nota = MELODIA_CAJITA[paso % MELODIA_CAJITA.length]
+  if (nota !== null) campana(m, nota, t, 0.07, 1.1, 0.15)
+  if (paso % 8 === 0) campana(m, BAJOS_CAJITA[Math.floor(paso / 8) % BAJOS_CAJITA.length], t, 0.05, 1.6, -0.15)
+}
