@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
+import AvisarCarta from './AvisarCarta.vue'
 
 const store = usePartidaStore()
 const partida = computed(() => store.partida!)
@@ -27,6 +28,8 @@ function salir() {
     <div class="acciones">
       <button class="btn btn-principal btn-bloque" @click="revancha">Jugar otra vez</button>
       <button class="btn btn-secundario btn-bloque" @click="salir">Terminar</button>
+      <!-- La carta con la que se ganó, por si tenía algún error. -->
+      <AvisarCarta v-if="store.carta" :carta="store.carta" />
     </div>
   </section>
 </template>

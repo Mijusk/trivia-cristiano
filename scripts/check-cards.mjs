@@ -1,6 +1,11 @@
 // Comprueba el banco de tarjetas: ids únicos, campos obligatorios, que la respuesta esté
-// entre las opciones y cuántas cartas hay en cada tema × prueba × nivel.
+// entre las opciones, que las citas existan en la Biblia CEE y cuántas cartas hay en cada
+// tema × prueba × nivel. Además avisa (sin fallar) de cartas que se repiten o se parecen.
+// Con --estricto, los avisos de repetidas también cuentan como errores.
 import { readFileSync } from 'node:fs'
+import { comprobarReferencia } from './referencias.mjs'
+
+const ESTRICTO = process.argv.includes('--estricto')
 
 const TEMAS = ['pentateuco', 'historicos', 'profetas', 'nt', 'vida']
 const NIVELES = ['peques', 'media', 'experta']
@@ -23,6 +28,7 @@ const normalizar = (s) =>
     .trim()
 
 const tabla = {}
+const todas = []
 const ids = new Set()
 const siguienteId = {}
 for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
@@ -48,6 +54,10 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     if (!texto) fallo(`${donde}: falta el texto de la carta`)
     if (/Jehová/i.test(JSON.stringify(c))) fallo(`${donde}: usa «Jehová»; en la versión católica es «el Señor»`)
     if (c.referencia && /\d:\d/.test(c.referencia)) fallo(`${donde}: la referencia usa «:»; en formato católico es «,» (Gén 6,14)`)
+    else if (c.referencia) {
+      const problema = comprobarReferencia(c.referencia)
+      if (problema) fallo(`${donde}: la referencia «${c.referencia}» no vale: ${problema}`)
+    }
     if (vistas.has(`${c.nivel}|${texto}`)) fallo(`${donde}: repetida en el mismo nivel: "${texto}"`)
     vistas.add(`${c.nivel}|${texto}`)
     if (prueba === 'pregunta') {
@@ -84,6 +94,7 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     // Las del Camino se cuentan aparte: con la opción apagada, Vida Cristiana se juega sin ellas.
     const clave = `${c.camino === true ? 'camino' : c.tema}|${prueba}|${c.nivel}`
     tabla[clave] = (tabla[clave] ?? 0) + 1
+    todas.push({ ...c, prueba })
   })
   siguienteId[prueba] = `${prueba}-${mayor + 1}`
 }
@@ -97,6 +108,28 @@ for (const tema of [...TEMAS, 'camino']) {
     for (const n of NIVELES)
       if ((tabla[`${tema}|${p}|${n}`] ?? 0) < MINIMO) fallo(`${tema} / ${p} / ${n}: menos de ${MINIMO} cartas`)
 }
+/*
+ * Repetidas o parecidas dentro de la misma prueba, en cualquier tema y nivel: la misma palabra
+ * para describir, o lo mismo para dibujar o hacer en mímica («La Última Cena» y «Última Cena»).
+ * La misma idea en pruebas distintas (dibujar la vela y hacerla en mímica) no se avisa, ni las
+ * respuestas que se repiten entre preguntas («Tres», «Elías»…): ahí suele ser normal.
+ */
+const VACIAS_INICIO = /^(el|la|los|las|un|una|del|al)\s+/
+const grupos = new Map()
+for (const c of todas) {
+  if (c.prueba === 'pregunta') continue
+  const k = `${c.prueba}|${normalizar(c.palabra ?? c.adivinar).replace(VACIAS_INICIO, '')}`
+  grupos.set(k, [...(grupos.get(k) ?? []), c])
+}
+const repetidas = [...grupos.values()].filter((g) => g.length > 1)
+if (repetidas.length) {
+  console.log(`\n${repetidas.length} aviso(s) de cartas que se repiten o se parecen (revisa si es la misma idea):`)
+  for (const g of repetidas) {
+    console.log(`  ⚠ ${g[0].prueba} «${g[0].palabra ?? g[0].adivinar}»: ${g.map((c) => `${c.id} (${c.tema}/${c.nivel})`).join(', ')}`)
+    if (ESTRICTO) errores++
+  }
+}
+
 const total = Object.values(tabla).reduce((a, b) => a + b, 0)
 console.log(`\nTotal: ${total} cartas`)
 console.log(`Siguientes ids libres: ${Object.values(siguienteId).join(', ')}`)

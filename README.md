@@ -32,7 +32,11 @@ npm run check:cards  # valida el banco de tarjetas
 npm test             # tests (Vitest); npm run test:watch los repite al guardar
 ```
 
-Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado y el store de la partida.
+Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado, avisos y los stores de la partida y de los avisos.
+
+### Avisos de cartas con errores
+
+En la pantalla de resultado (y en la de victoria) está «⚠️ ¿Esta carta tiene un error?»: se elige el motivo, se puede añadir un comentario y la carta queda marcada en ese dispositivo (`localStorage`, `trivia-cristiano/avisos/v1`), aunque se termine la partida. Si hay alguna, la portada muestra «Cartas con aviso (N)» con la lista para copiarla o compartirla, una línea por carta con su `id`, tema, prueba y nivel, para buscarla en `src/data/`. Código en `src/game/avisos.ts`, `src/stores/avisos.ts` y los componentes `AvisarCarta.vue` y `AvisosModal.vue`.
 
 Stack: Vite + Vue 3 + TypeScript + Pinia. Sin backend.
 
@@ -74,7 +78,10 @@ Criterios:
 - Vida Cristiana sigue el Catecismo de la Iglesia Católica y, en las respuestas de la misa, el Misal Romano en español de la Conferencia Episcopal Española («Y con tu espíritu», «Te alabamos, Señor»…). **Peques:** lo que sabe un niño de catequesis de comunión. **Media:** lo que sabe alguien que va a misa. **Experta:** detalles que se deducen con la pista. Nada polémico ni de opinión.
 - Camino Neocatecumenal: solo hechos contrastables y en tono respetuoso; si un dato no está claro, no se usa.
 
-Después de editar, ejecuta `npm run check:cards`.
+Después de editar, ejecuta `npm run check:cards`. Además de los campos, comprueba:
+
+- **Citas bíblicas:** que el libro, el capítulo y el versículo existan en la Biblia de la CEE (formato `Gén 6,14`, `Gén 1,1–2,3`, `Éx 7–12`, `Sal 23 (22),1`; también vale `CEC 1210`). La estructura de capítulos y versículos, sin texto, está en `scripts/biblia-cee.json`. Una cita que no existe es un error.
+- **Repetidas o parecidas:** cartas de la misma prueba con la misma palabra o lo mismo que adivinar, aunque estén en otro tema o nivel. Solo avisa (⚠) y no hace fallar; con `node scripts/check-cards.mjs --estricto` sí falla.
 
 Si en un tema no quedan cartas sin usar para el nivel de la pareja, el juego saca una de otro de los temas de la partida, del mismo nivel, y el quesito cuenta igual. Cuando ya han salido todas las de esa prueba y nivel, el mazo vuelve a empezar y la carta lo avisa.
 

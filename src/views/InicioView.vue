@@ -3,11 +3,15 @@ import { ref } from 'vue'
 import { usePartidaStore } from '../stores/partida'
 import PortadaEscena from '../components/PortadaEscena.vue'
 import ReglasModal from '../components/ReglasModal.vue'
+import AvisosModal from '../components/AvisosModal.vue'
 import BotonSonido from '../components/BotonSonido.vue'
 import { volverAVerRegalo } from '../regalo/estado'
+import { useAvisosStore } from '../stores/avisos'
 
 const store = usePartidaStore()
+const avisos = useAvisosStore()
 const reglasAbiertas = ref(false)
+const avisosAbiertos = ref(false)
 
 // Mantener pulsado el logo un segundo vuelve a mostrar el regalo.
 let pulsacion: ReturnType<typeof setTimeout> | undefined
@@ -65,10 +69,14 @@ function cancelarPulsacion() {
           Nueva partida
         </button>
         <button class="btn-texto reglas" @click="reglasAbiertas = true">Cómo se juega</button>
+        <button v-if="avisos.avisos.length" class="btn-texto avisos" @click="avisosAbiertos = true">
+          ⚠️ Cartas con aviso ({{ avisos.avisos.length }})
+        </button>
       </div>
     </section>
 
     <ReglasModal v-model="reglasAbiertas" />
+    <AvisosModal v-model="avisosAbiertos" />
   </main>
 </template>
 
@@ -180,6 +188,12 @@ h1 span {
   align-self: center;
   color: #d9d4f2;
   font-weight: 700;
+}
+
+.avisos {
+  align-self: center;
+  margin-top: -10px;
+  font-size: 0.95rem;
 }
 
 @keyframes aparece {

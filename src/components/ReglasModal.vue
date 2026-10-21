@@ -19,11 +19,11 @@ function cerrarSiFondo(e: MouseEvent) {
 </script>
 
 <template>
-  <dialog ref="dialogo" class="reglas" aria-labelledby="titulo-reglas" @close="abierto = false" @click="cerrarSiFondo">
+  <dialog ref="dialogo" class="dialogo" aria-labelledby="titulo-reglas" @close="abierto = false" @click="cerrarSiFondo">
     <div class="contenido">
-      <header>
+      <header class="dialogo-cabecera">
         <h2 id="titulo-reglas">Cómo se juega</h2>
-        <button class="cerrar" aria-label="Cerrar las reglas" @click="abierto = false">✕</button>
+        <button class="dialogo-cerrar" aria-label="Cerrar las reglas" @click="abierto = false">✕</button>
       </header>
 
       <section>
@@ -90,37 +90,10 @@ function cerrarSiFondo(e: MouseEvent) {
 </template>
 
 <style scoped>
-.reglas {
-  width: min(100% - 32px, 460px);
-  max-height: min(100dvh - 48px, 760px);
-  margin: auto;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radio-carta);
-  background: var(--carta);
-  color: var(--tinta);
-  box-shadow: var(--sombra-carta);
-}
-
-.reglas::backdrop {
-  background: rgba(10, 10, 30, 0.7);
-  backdrop-filter: blur(2px);
-}
-
-.reglas[open] {
-  animation: entra 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-}
-
 .contenido {
   padding: 20px 20px 22px;
   display: grid;
   gap: 18px;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 h2 {
@@ -134,15 +107,6 @@ h3 {
 
 p {
   margin: 0 0 8px;
-}
-
-.cerrar {
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 50%;
-  background: #eceef8;
-  cursor: pointer;
 }
 
 ul {
@@ -176,12 +140,5 @@ li {
 .suave {
   color: var(--tinta-suave);
   font-size: 0.92rem;
-}
-
-@keyframes entra {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
 }
 </style>

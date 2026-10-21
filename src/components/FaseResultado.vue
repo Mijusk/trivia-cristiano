@@ -4,6 +4,7 @@ import { INFO_PRUEBA, INFO_TEMA } from '../game/config'
 import { temaCompleto } from '../game/reglas'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
+import AvisarCarta from './AvisarCarta.vue'
 
 const store = usePartidaStore()
 const partida = computed(() => store.partida!)
@@ -39,6 +40,7 @@ const solucion = computed(() => {
       <button class="btn btn-principal btn-bloque" @click="store.siguienteTurno()">
         Turno de {{ siguiente.nombre }}
       </button>
+      <AvisarCarta v-if="store.carta" :carta="store.carta" />
     </div>
   </section>
 </template>
