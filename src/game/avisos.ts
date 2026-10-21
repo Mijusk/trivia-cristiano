@@ -76,8 +76,9 @@ export function exportarAvisos(avisos: Aviso[]): string {
  * apunta cada aviso en una hoja de Drive y manda un correo. Sin URL, los avisos solo se guardan aquí.
  */
 // La URL no es secreta (va dentro de la web publicada): se puede dejar aquí o en VITE_URL_AVISOS.
-const URL_PUBLICADA = ''
-export const URL_AVISOS: string = import.meta.env.VITE_URL_AVISOS || URL_PUBLICADA
+const URL_PUBLICADA = 'https://script.google.com/macros/s/AKfycbxoSLcH8_9M8jeoODuGrk7c_CwcPz9wiBTIupPCVvdkRzND5FqwAmEo_Hn_fwngLqHBFw/exec'
+// En los tests no se usa nunca la hoja de verdad.
+export const URL_AVISOS: string = import.meta.env.VITE_URL_AVISOS || (import.meta.env.MODE === 'test' ? '' : URL_PUBLICADA)
 
 /** Lo que se manda por cada aviso: todo lo necesario para encontrar y revisar la carta. */
 export function datosEnvio(a: Aviso) {

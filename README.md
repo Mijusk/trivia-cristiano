@@ -43,8 +43,8 @@ En la pantalla de resultado (y en la de victoria), arriba a la derecha, está «
 
 1. En Google Drive, crea la carpeta `trivia-cristiano` y dentro una hoja de cálculo llamada `errores-app`.
 2. En la hoja: **Extensiones → Apps Script**. Borra lo que haya y pega el contenido de [`scripts/avisos-apps-script.gs`](scripts/avisos-apps-script.gs). Guarda.
-3. Elige la función `probar` y pulsa **Ejecutar**. Google pedirá permisos (para la hoja y para mandar correo): acéptalos. Debe aparecer la pestaña «Avisos» con una fila de prueba y llegar un correo.
-4. **Implementar → Nueva implementación → Aplicación web**. «Ejecutar como»: *Yo*; «Quién tiene acceso»: *Cualquier usuario*. Copia la URL que termina en `/exec`.
+3. Arriba, en la lista de funciones, elige `probar` (no `doPost`) y pulsa **Ejecutar**. Google pedirá permisos (para la hoja y para mandar correo): acéptalos. Debe aparecer la pestaña «Avisos» con una fila de prueba y llegar un correo.
+4. **Implementar → Nueva implementación → Aplicación web**. «Ejecutar como»: *Yo*; «Quién tiene acceso»: *Cualquier usuario* (no «Cualquier usuario con una cuenta de Google»: con esa, el juego recibe un error 401 y no llega nada). Copia la URL que termina en `/exec`.
 5. Pon esa URL en `URL_PUBLICADA` en `src/game/avisos.ts` (o en la variable de entorno `VITE_URL_AVISOS` al compilar) y vuelve a publicar el juego.
 
 Si cambias el script, hay que publicarlo otra vez (**Implementar → Gestionar implementaciones → Editar → Nueva versión**) para que la URL use el código nuevo. La URL no es secreta (va dentro de la web), así que el script solo acepta avisos con la forma del juego y recorta los textos.

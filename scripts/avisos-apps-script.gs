@@ -12,23 +12,53 @@ const COLUMNAS = ['Recibido', 'Carta', 'Tema', 'Prueba', 'Nivel', 'Texto', 'Refe
 const CAMPOS = ['cartaId', 'tema', 'prueba', 'nivel', 'texto', 'referencia', 'motivo', 'comentario', 'fecha']
 const MAX_CAMPO = 600
 
+/**
+ * Para probarlo desde el editor: elige «probar» en la lista de funciones y pulsa Ejecutar.
+ * Crea la pestaña «Avisos» si no está, añade una fila de prueba y manda un correo.
+ * Va la primera porque el editor ejecuta la primera función de la lista si no se elige otra.
+ */
+function probar() {
+  const r = guardarAviso({
+    cartaId: 'pregunta-1',
+    tema: 'Pentateuco',
+    prueba: 'Pregunta',
+    nivel: 'Peques',
+    texto: 'Prueba del script',
+    referencia: '',
+    motivo: 'Otro motivo',
+    comentario: 'Esto es una prueba',
+    fecha: new Date().toISOString(),
+  })
+  if (!r.ok) throw new Error(r.error)
+  Logger.log('Todo bien: mira la pestaña «%s» y tu correo.', PESTANA)
+}
+
 function doPost(e) {
+  if (!e || !e.postData) {
+    throw new Error('doPost solo lo llama el juego. Para probar, elige la función «probar» y pulsa Ejecutar.')
+  }
   let datos
   try {
     datos = JSON.parse(e.postData.contents)
   } catch (err) {
     return respuesta({ ok: false, error: 'no es JSON' })
   }
+  return respuesta(guardarAviso(datos))
+}
+
+/** Añade la fila y manda el correo. */
+function guardarAviso(datos) {
   // Solo avisos con la forma del juego: el id de una carta y su motivo.
   if (!datos || typeof datos.cartaId !== 'string' || !/^(pregunta|dibujar|describir|mimica)-\d+$/.test(datos.cartaId) || !datos.motivo) {
-    return respuesta({ ok: false, error: 'aviso no válido' })
+    return { ok: false, error: 'aviso no válido' }
   }
   const valores = CAMPOS.map((c) => limpiar(datos[c]))
+  const libro = libroDeAvisos()
 
   const cerrojo = LockService.getScriptLock()
   cerrojo.waitLock(10000)
   try {
-    hoja().appendRow([new Date(), ...valores, ''])
+    hoja(libro).appendRow([new Date(), ...valores, ''])
   } finally {
     cerrojo.releaseLock()
   }
@@ -45,17 +75,24 @@ function doPost(e) {
       `Motivo: ${motivo}`,
       comentario ? `Comentario: ${comentario}` : 'Sin comentario.',
       '',
-      `Hoja de avisos: ${SpreadsheetApp.getActiveSpreadsheet().getUrl()}`,
+      `Hoja de avisos: ${libro.getUrl()}`,
     ]
       .filter((l, i, todas) => l !== '' || todas[i - 1] !== '')
       .join('\n'),
   })
-  return respuesta({ ok: true })
+  return { ok: true }
+}
+
+function libroDeAvisos() {
+  const libro = SpreadsheetApp.getActiveSpreadsheet()
+  if (!libro) {
+    throw new Error('El script no está dentro de la hoja. Ábrelo desde la hoja «errores-app» con Extensiones → Apps Script.')
+  }
+  return libro
 }
 
 /** La pestaña de avisos, creada con sus columnas la primera vez. */
-function hoja() {
-  const libro = SpreadsheetApp.getActiveSpreadsheet()
+function hoja(libro) {
   let h = libro.getSheetByName(PESTANA)
   if (!h) {
     h = libro.insertSheet(PESTANA)
@@ -74,23 +111,4 @@ function limpiar(v) {
 
 function respuesta(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON)
-}
-
-/** Para probarlo desde el editor (botón Ejecutar): añade una fila y manda un correo de prueba. */
-function probar() {
-  doPost({
-    postData: {
-      contents: JSON.stringify({
-        cartaId: 'pregunta-1',
-        tema: 'Pentateuco',
-        prueba: 'Pregunta',
-        nivel: 'Peques',
-        texto: 'Prueba del script',
-        referencia: '',
-        motivo: 'Otro motivo',
-        comentario: 'Esto es una prueba',
-        fecha: new Date().toISOString(),
-      }),
-    },
-  })
 }
