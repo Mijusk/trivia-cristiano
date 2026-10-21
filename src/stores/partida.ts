@@ -3,8 +3,10 @@ import { computed, ref, watch } from 'vue'
 import type { Casilla, Modo, Nivel, Partida } from '../types'
 import { TIEMPOS_POR_DEFECTO } from '../game/config'
 import { cartaPorId, sacarCarta } from '../game/mazo'
+import { VERSION_PARTIDA, leerPartida, limpiarUsadas } from '../game/guardado'
 import { casillasPendientes, claveCasilla, haGanado } from '../game/reglas'
 
+// La clave no cambia entre versiones para no perder partidas: la versión va dentro (game/guardado.ts).
 const CLAVE_GUARDADO = 'trivia-cristiano/partida/v1'
 
 export type Pantalla = 'inicio' | 'configurar' | 'juego'
@@ -13,8 +15,7 @@ function cargar(): Partida | null {
   try {
     const texto = localStorage.getItem(CLAVE_GUARDADO)
     if (!texto) return null
-    const partida = JSON.parse(texto) as Partida
-    return partida.version === 1 && Array.isArray(partida.parejas) ? partida : null
+    return leerPartida(JSON.parse(texto))
   } catch {
     return null
   }
@@ -32,8 +33,7 @@ function guardar(partida: Partida | null) {
 /** Cartas que salieron en partidas anteriores, para no repetirlas pronto. */
 function cargarUsadas(): string[] {
   try {
-    const lista = JSON.parse(localStorage.getItem(`${CLAVE_GUARDADO}/usadas`) ?? '[]')
-    return Array.isArray(lista) ? lista : []
+    return limpiarUsadas(JSON.parse(localStorage.getItem(`${CLAVE_GUARDADO}/usadas`) ?? '[]'))
   } catch {
     return []
   }
@@ -60,7 +60,7 @@ export const usePartidaStore = defineStore('partida', () => {
 
   function nuevaPartida(parejas: { nombre: string; nivel: Nivel }[], modo: Modo) {
     partida.value = {
-      version: 1,
+      version: VERSION_PARTIDA,
       fase: 'turno',
       modo,
       parejas: parejas.map((p, i) => ({
@@ -73,6 +73,7 @@ export const usePartidaStore = defineStore('partida', () => {
       casilla: null,
       cartaId: null,
       cartaDeOtroTema: false,
+      mazoReiniciado: false,
       pistaUsada: false,
       cambioUsado: false,
       usadas: partida.value?.usadas ?? cargarUsadas(),
@@ -82,26 +83,30 @@ export const usePartidaStore = defineStore('partida', () => {
     pantalla.value = 'juego'
   }
 
-  /** La ruleta ha caído en una casilla: se saca la carta. */
-  function jugarCasilla(casilla: Casilla) {
+  /** La ruleta ha caído en una casilla: se saca la carta, distinta de `evitar` si se está cambiando. */
+  function jugarCasilla(casilla: Casilla, evitar: string | null = null) {
     const p = partida.value
     const pareja = parejaActual.value
     if (!p || !pareja) return
-    const { carta, deOtroTema } = sacarCarta(casilla.tema, casilla.prueba, pareja.nivel, p.usadas)
+    const sacada = sacarCarta(casilla.tema, casilla.prueba, pareja.nivel, p.usadas, evitar)
     p.casilla = casilla
-    p.cartaId = carta.id
-    p.cartaDeOtroTema = deOtroTema
-    p.usadas.push(carta.id)
+    p.cartaId = sacada.carta.id
+    p.cartaDeOtroTema = sacada.deOtroTema
+    p.mazoReiniciado = sacada.reiniciado
+    p.usadas = sacada.usadas
     p.pistaUsada = false
     p.ultimoAcierto = null
     p.fase = 'carta'
   }
 
-  /** Cambia la carta por otra de la misma casilla. Solo una vez por turno. */
+  /**
+   * Cambia la carta por otra de la misma casilla. Solo una vez por turno.
+   * La descartada sigue contando como usada: ya la ha visto alguien.
+   */
   function otraCarta() {
     const p = partida.value
     if (!p?.casilla || p.cambioUsado) return
-    jugarCasilla(p.casilla)
+    jugarCasilla(p.casilla, p.cartaId)
     p.cambioUsado = true
   }
 
@@ -128,6 +133,7 @@ export const usePartidaStore = defineStore('partida', () => {
     p.casilla = null
     p.cartaId = null
     p.cartaDeOtroTema = false
+    p.mazoReiniciado = false
     p.pistaUsada = false
     p.cambioUsado = false
     p.ultimoAcierto = null

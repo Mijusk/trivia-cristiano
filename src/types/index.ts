@@ -70,7 +70,7 @@ export interface Pareja {
 export type Fase = 'turno' | 'carta' | 'resultado' | 'victoria'
 
 export interface Partida {
-  version: 1
+  version: 2
   fase: Fase
   modo: Modo
   parejas: Pareja[]
@@ -79,6 +79,8 @@ export interface Partida {
   cartaId: string | null
   /** La carta salió de otro tema porque no quedaban del tema pedido. */
   cartaDeOtroTema: boolean
+  /** Ya habían salido todas las cartas de esta prueba y nivel y el mazo ha vuelto a empezar. */
+  mazoReiniciado: boolean
   /** Ya se ha pedido la pista de la carta actual. */
   pistaUsada: boolean
   /** La pareja ya ha cambiado de carta en este turno. */
