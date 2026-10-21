@@ -32,7 +32,7 @@ function cerrarSiFondo(e: MouseEvent) {
           Cada pareja gira su ruleta, que solo tiene las casillas que le faltan. Si acertáis, ganáis ese quesito.
           Aciertes o no, el turno pasa a la siguiente pareja.
         </p>
-        <p>Gana la primera pareja que complete los cuatro temas.</p>
+        <p>Gana la primera pareja que complete todos los temas de la partida.</p>
       </section>
 
       <section>
@@ -40,9 +40,14 @@ function cerrarSiFondo(e: MouseEvent) {
         <ul class="temas">
           <li v-for="t in TEMAS" :key="t">
             <span class="punto" :style="{ background: INFO_TEMA[t].color }" />
-            <span><strong>{{ INFO_TEMA[t].nombre }}</strong> <span class="suave">{{ INFO_TEMA[t].libros }}</span></span>
+            <span><strong>{{ INFO_TEMA[t].nombre }}</strong> <span class="suave">{{ INFO_TEMA[t].descripcion }}</span></span>
           </li>
         </ul>
+        <p>
+          Al preparar la partida se eligen los temas con los que se juega (al menos uno); la ruleta y la ficha solo
+          tienen esos. Con Vida Cristiana se pueden incluir también cartas del Camino Neocatecumenal, que se mezclan
+          con las demás de ese tema.
+        </p>
       </section>
 
       <section>

@@ -1,4 +1,5 @@
 import type { Carta, CartaDescribir, CartaDibujar, CartaMimica, CartaPregunta, Nivel, Prueba, Tema } from '../types'
+import { TEMAS } from './config'
 import preguntas from '../data/preguntas.json'
 import dibujar from '../data/dibujar.json'
 import describir from '../data/describir.json'
@@ -36,23 +37,38 @@ export interface CartaSacada {
   usadas: string[]
 }
 
+export interface OpcionesMazo {
+  /** La carta que se está cambiando, para que no vuelva a salir. */
+  evitar?: string | null
+  /** Temas de la partida: las cartas de otros temas no salen nunca. Por defecto, todos. */
+  temas?: Tema[]
+  /** Mezclar las cartas del Camino Neocatecumenal. Por defecto, no. */
+  incluirCamino?: boolean
+}
+
+/** La carta puede salir en una partida con estos temas y esta opción del Camino. */
+export function cartaPermitida(carta: Carta, temas: Tema[], incluirCamino: boolean): boolean {
+  return temas.includes(carta.tema) && (incluirCamino || !carta.camino)
+}
+
 /**
- * Saca una carta para el tema, la prueba y el nivel pedidos. Busca por orden:
- * una sin usar del tema, una sin usar del mismo nivel en otro tema y, si no hay
- * cartas de ese nivel, cualquiera de la prueba. Cuando ya han salido todas las
- * de la prueba y el nivel, se olvidan esas usadas y el mazo vuelve a empezar.
- * `evitar` es la carta que se está cambiando, para que no vuelva a salir.
+ * Saca una carta para el tema, la prueba y el nivel pedidos, siempre de los
+ * temas de la partida. Busca por orden: una sin usar del tema, una sin usar del
+ * mismo nivel en otro tema de la partida y, si no hay cartas de ese nivel,
+ * cualquiera de la prueba. Cuando ya han salido todas las de la prueba y el
+ * nivel, se olvidan esas usadas y el mazo vuelve a empezar.
  */
 export function sacarCarta(
   tema: Tema,
   prueba: Prueba,
   nivel: Nivel,
   usadas: string[],
-  evitar: string | null = null,
+  { evitar = null, temas = TEMAS, incluirCamino = false }: OpcionesMazo = {},
 ): CartaSacada {
-  let deLaPrueba = CARTAS.filter((c) => c.prueba === prueba && c.id !== evitar)
+  const permitidas = CARTAS.filter((c) => c.prueba === prueba && cartaPermitida(c, temas, incluirCamino))
+  let deLaPrueba = permitidas.filter((c) => c.id !== evitar)
   // Si la que se cambia es la única carta de la prueba, no queda otra que repetirla.
-  if (deLaPrueba.length === 0) deLaPrueba = CARTAS.filter((c) => c.prueba === prueba)
+  if (deLaPrueba.length === 0) deLaPrueba = permitidas
   if (deLaPrueba.length === 0) throw new Error(`No hay cartas de ${prueba}`)
 
   const delNivel = new Set(deLaPrueba.filter((c) => c.nivel === nivel).map((c) => c.id))

@@ -20,7 +20,7 @@ function salir() {
 <template>
   <section class="victoria" aria-live="polite">
     <div class="centro">
-      <Quesera :pareja="ganadora" :modo="partida.modo" :tamano="180" class="ficha" />
+      <Quesera :pareja="ganadora" :modo="partida.modo" :temas="partida.temas" :tamano="180" class="ficha" />
       <p class="gana">Ha ganado</p>
       <h1>{{ ganadora.nombre }}</h1>
     </div>

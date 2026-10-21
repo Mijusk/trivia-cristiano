@@ -2,8 +2,9 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import type { Casilla, CasillaKey } from '../types'
-import { TEMAS } from '../game/config'
+import { TEMAS, TEMAS_BIBLICOS } from '../game/config'
 import { VERSION_PARTIDA } from '../game/guardado'
+import { CARTAS } from '../game/mazo'
 import { usePartidaStore } from './partida'
 
 const CLAVE = 'trivia-cristiano/partida/v1'
@@ -48,7 +49,40 @@ describe('partida', () => {
     expect(store.parejaActual?.nombre).toBe('Ana y Juan')
     // Sin nombre se llama por su número.
     expect(store.partida!.parejas[1].nombre).toBe('Pareja 2')
-    expect(store.pendientes).toHaveLength(16)
+    // Por defecto, con los cinco temas y sin el Camino.
+    expect(store.partida).toMatchObject({ temas: TEMAS, incluirCamino: false })
+    expect(store.pendientes).toHaveLength(20)
+  })
+
+  it('se juega solo con los temas elegidos, ordenados', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { temas: ['vida', 'nt'] })
+    expect(store.partida!.temas).toEqual(['nt', 'vida'])
+    expect(new Set(store.pendientes.map((c) => c.tema))).toEqual(new Set(['nt', 'vida']))
+  })
+
+  it('sin ningún tema elegido se juega con todos', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { temas: [] })
+    expect(store.partida!.temas).toEqual(TEMAS)
+  })
+
+  it('el Camino solo se incluye si se juega con Vida Cristiana', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { temas: TEMAS_BIBLICOS, incluirCamino: true })
+    expect(store.partida!.incluirCamino).toBe(false)
+    store.nuevaPartida(PAREJAS, 'corta', { temas: ['vida'], incluirCamino: true })
+    expect(store.partida!.incluirCamino).toBe(true)
+  })
+
+  it('solo con Vida Cristiana y sin el Camino, nunca sale una carta del Camino ni de otro tema', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'completa', { temas: ['vida'] })
+    for (let i = 0; i < 200; i++) {
+      store.jugarCasilla(store.pendientes[i % store.pendientes.length])
+      expect(store.carta).toMatchObject({ tema: 'vida' })
+      expect(store.carta!.camino).toBeFalsy()
+    }
   })
 
   it('jugar una casilla saca una carta del nivel de la pareja', () => {
@@ -128,8 +162,9 @@ describe('partida', () => {
       store.jugarCasilla(CASILLA)
       if (!store.partida!.mazoReiniciado) vistas.add(store.partida!.cartaId!)
     }
-    // Antes de reiniciar han salido todas las de peques sin repetir (40 preguntas, 10 por tema).
-    expect(vistas.size).toBe(40)
+    // Antes de reiniciar han salido sin repetir todas las preguntas de peques de los cinco temas (sin el Camino).
+    const preguntasPeques = CARTAS.filter((c) => c.prueba === 'pregunta' && c.nivel === 'peques' && !c.camino)
+    expect(vistas.size).toBe(preguntasPeques.length)
   })
 })
 
@@ -166,8 +201,16 @@ describe('guardado', () => {
       }),
     )
     const store = abrirJuego()
-    expect(store.partida).toMatchObject({ version: VERSION_PARTIDA, usadas: ['mimica-3'] })
+    expect(store.partida).toMatchObject({
+      version: VERSION_PARTIDA,
+      usadas: ['mimica-3'],
+      temas: TEMAS_BIBLICOS,
+      incluirCamino: false,
+    })
     expect(store.parejaActual!.ganadas).toEqual(['nt:mimica'])
+    // Sigue jugándose con los cuatro temas bíblicos: la ruleta no trae Vida Cristiana.
+    expect(store.pendientes.some((c) => c.tema === 'vida')).toBe(false)
+    expect(store.pendientes).toHaveLength(15)
   })
 
   it('un guardado roto no impide abrir el juego', () => {

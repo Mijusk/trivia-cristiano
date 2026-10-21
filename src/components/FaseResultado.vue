@@ -25,7 +25,7 @@ const solucion = computed(() => {
 <template>
   <section class="resultado" :class="acierto ? 'bien' : 'mal'" aria-live="polite">
     <div class="centro">
-      <Quesera :pareja="pareja" :modo="partida.modo" :tamano="150" class="ficha" />
+      <Quesera :pareja="pareja" :modo="partida.modo" :temas="partida.temas" :tamano="150" class="ficha" />
       <h1 v-if="acierto">¡Quesito para {{ pareja.nombre }}!</h1>
       <h1 v-else>Esta vez no</h1>
       <p v-if="acierto" class="detalle">

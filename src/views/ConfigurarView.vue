@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import type { Modo, Nivel } from '../types'
-import { INFO_MODO, INFO_NIVEL, MODOS, NIVELES } from '../game/config'
+import { computed, reactive, ref } from 'vue'
+import type { Modo, Nivel, Tema } from '../types'
+import { INFO_MODO, INFO_NIVEL, INFO_TEMA, MODOS, NIVELES, TEMAS, descripcionModo, ordenarTemas } from '../game/config'
 import { usePartidaStore } from '../stores/partida'
 
 const store = usePartidaStore()
@@ -18,6 +18,14 @@ const parejas = reactive<{ nombre: string; nivel: Nivel }[]>(
 )
 const modo = ref<Modo>(store.partida?.modo ?? 'corta')
 
+// Todos los temas marcados por defecto; en la revancha, los de la partida anterior.
+const temas = ref<Tema[]>([...(store.partida?.temas ?? TEMAS)])
+const incluirCamino = ref(store.partida?.incluirCamino ?? false)
+const conVida = computed(() => temas.value.includes('vida'))
+
+/** No se puede desmarcar el último tema: hace falta al menos uno. */
+const esUltimo = (t: Tema) => temas.value.length === 1 && temas.value[0] === t
+
 function anadir() {
   if (parejas.length < MAX) parejas.push({ nombre: '', nivel: 'media' })
 }
@@ -27,7 +35,11 @@ function quitar(i: number) {
 }
 
 function empezar() {
-  store.nuevaPartida(parejas, modo.value)
+  const elegidos = ordenarTemas(temas.value)
+  store.nuevaPartida(parejas, modo.value, {
+    temas: elegidos,
+    incluirCamino: incluirCamino.value && elegidos.includes('vida'),
+  })
 }
 </script>
 
@@ -79,6 +91,47 @@ function empezar() {
       </button>
     </section>
 
+    <section aria-labelledby="titulo-temas">
+      <h2 id="titulo-temas">Temas</h2>
+      <p class="ayuda">Elegid con qué temas jugáis. Hace falta al menos uno.</p>
+      <fieldset class="temas">
+        <legend class="visualmente-oculto">Temas de la partida</legend>
+        <label
+          v-for="t in TEMAS"
+          :key="t"
+          class="tema"
+          :class="{ activo: temas.includes(t), bloqueado: esUltimo(t) }"
+          :style="{ '--color-tema': INFO_TEMA[t].color }"
+        >
+          <input
+            v-model="temas"
+            type="checkbox"
+            :value="t"
+            class="visualmente-oculto"
+            :disabled="esUltimo(t)"
+            :aria-describedby="esUltimo(t) ? 'aviso-ultimo-tema' : undefined"
+          />
+          <span class="marca" aria-hidden="true" />
+          <span class="texto-tema">
+            <strong>{{ INFO_TEMA[t].nombre }}</strong>
+            <span>{{ INFO_TEMA[t].descripcion }}</span>
+          </span>
+        </label>
+      </fieldset>
+      <p v-if="temas.length === 1" id="aviso-ultimo-tema" class="ayuda ayuda-abajo">
+        Para quitar este tema, marca antes otro.
+      </p>
+
+      <label v-if="conVida" class="interruptor">
+        <input v-model="incluirCamino" type="checkbox" role="switch" class="visualmente-oculto" />
+        <span class="carril" aria-hidden="true"><span class="bola" /></span>
+        <span>
+          <strong>Incluir temas del Camino Neocatecumenal</strong>
+          <span class="detalle">Se mezclan con las cartas de Vida Cristiana.</span>
+        </span>
+      </label>
+    </section>
+
     <section aria-labelledby="titulo-modo">
       <h2 id="titulo-modo">Duración</h2>
       <fieldset class="modos">
@@ -86,7 +139,7 @@ function empezar() {
         <label v-for="m in MODOS" :key="m" class="modo" :class="{ activo: modo === m }">
           <input v-model="modo" type="radio" name="modo" :value="m" class="visualmente-oculto" />
           <strong>{{ INFO_MODO[m].nombre }}</strong>
-          <span>{{ INFO_MODO[m].descripcion }}</span>
+          <span>{{ descripcionModo(m, temas.length) }}</span>
         </label>
       </fieldset>
     </section>
@@ -197,7 +250,9 @@ fieldset {
 }
 
 .niveles label:focus-within,
-.modo:focus-within {
+.modo:focus-within,
+.tema:focus-within,
+.interruptor:focus-within {
   outline: 3px solid var(--tema-profetas);
   outline-offset: 2px;
 }
@@ -224,6 +279,124 @@ fieldset {
 
 .modo.activo {
   box-shadow: inset 0 0 0 3px var(--tema-profetas);
+}
+
+.temas {
+  display: grid;
+  gap: 8px;
+}
+
+.tema {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--mesa-claro);
+  box-shadow: inset 6px 0 0 var(--color-tema);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.tema.activo {
+  opacity: 1;
+}
+
+.tema.bloqueado {
+  cursor: not-allowed;
+}
+
+.marca {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 3px solid var(--color-tema);
+  background: var(--mesa);
+}
+
+.tema.activo .marca {
+  background: var(--color-tema);
+}
+
+.tema.activo .marca::after {
+  content: '';
+  width: 6px;
+  height: 12px;
+  margin-top: -3px;
+  border: solid var(--mesa);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.texto-tema {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.texto-tema span {
+  color: var(--sobre-mesa-suave);
+  font-size: 0.88rem;
+}
+
+.ayuda-abajo {
+  margin: 8px 0 0;
+}
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--mesa-claro);
+  cursor: pointer;
+}
+
+.interruptor strong {
+  display: block;
+}
+
+.interruptor .detalle {
+  color: var(--sobre-mesa-suave);
+  font-size: 0.88rem;
+}
+
+.carril {
+  position: relative;
+  width: 50px;
+  height: 30px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--mesa);
+  box-shadow: inset 0 0 0 2px var(--mesa-borde);
+  transition: background 0.15s ease;
+}
+
+.bola {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--sobre-mesa-suave);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.interruptor input:checked + .carril {
+  background: var(--tema-vida);
+  box-shadow: none;
+}
+
+.interruptor input:checked + .carril .bola {
+  transform: translateX(20px);
+  background: var(--sobre-mesa);
 }
 
 .aviso {

@@ -9,11 +9,12 @@
   --sobre-mesa: #eef0ff;
   --sobre-mesa-suave: #b5b9e3;
 
-  /* Los cuatro temas, como las fichas de un juego de mesa */
+  /* Los temas, como las fichas de un juego de mesa. Vida Cristiana, morado litúrgico. */
   --tema-pentateuco: #3ba55c;
   --tema-historicos: #3d7be0;
   --tema-profetas: #f5b700;
   --tema-nt: #e5484d;
+  --tema-vida: #a259e6;
 
   --acierto: #3ba55c;
   --fallo: #e5484d;

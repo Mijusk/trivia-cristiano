@@ -1,5 +1,5 @@
 import type { Casilla, CasillaKey, Modo, Pareja, Tema } from '../types'
-import { META_POR_TEMA, PRUEBAS, TEMAS } from './config'
+import { META_POR_TEMA, PRUEBAS } from './config'
 
 export const claveCasilla = (c: Casilla): CasillaKey => `${c.tema}:${c.prueba}`
 
@@ -12,14 +12,14 @@ export function temaCompleto(pareja: Pareja, tema: Tema, modo: Modo): boolean {
 }
 
 /**
- * Casillas que todavía puede ganar la pareja: las de los temas que aún no ha
- * completado y que no haya ganado ya. Se ordenan por prueba y luego por tema
- * para que en la ruleta los colores de los temas se vayan alternando.
+ * Casillas que todavía puede ganar la pareja: las de los temas de la partida
+ * que aún no ha completado y que no haya ganado ya. Se ordenan por prueba y
+ * luego por tema para que en la ruleta los colores de los temas se vayan alternando.
  */
-export function casillasPendientes(pareja: Pareja, modo: Modo): Casilla[] {
+export function casillasPendientes(pareja: Pareja, modo: Modo, temas: Tema[]): Casilla[] {
   const pendientes: Casilla[] = []
   for (const prueba of PRUEBAS) {
-    for (const tema of TEMAS) {
+    for (const tema of temas) {
       const casilla = { tema, prueba }
       if (temaCompleto(pareja, tema, modo)) continue
       if (pareja.ganadas.includes(claveCasilla(casilla))) continue
@@ -29,6 +29,7 @@ export function casillasPendientes(pareja: Pareja, modo: Modo): Casilla[] {
   return pendientes
 }
 
-export function haGanado(pareja: Pareja, modo: Modo): boolean {
-  return TEMAS.every((tema) => temaCompleto(pareja, tema, modo))
+/** Gana quien completa todos los temas con los que se juega la partida. */
+export function haGanado(pareja: Pareja, modo: Modo, temas: Tema[]): boolean {
+  return temas.length > 0 && temas.every((tema) => temaCompleto(pareja, tema, modo))
 }
