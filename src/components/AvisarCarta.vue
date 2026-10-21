@@ -4,7 +4,8 @@ import type { Carta } from '../types'
 import { INFO_MOTIVO, MAX_COMENTARIO, MOTIVOS, textoCarta, type Motivo } from '../game/avisos'
 import { useAvisosStore } from '../stores/avisos'
 
-const props = defineProps<{ carta: Carta }>()
+/** `frase`: con el texto al lado del icono (la primera vez de cada pareja); si no, solo el icono. */
+const props = defineProps<{ carta: Carta; frase?: boolean }>()
 
 const avisos = useAvisosStore()
 const aviso = computed(() => avisos.avisoDe(props.carta.id))
@@ -45,8 +46,16 @@ function cerrarSiFondo(e: MouseEvent) {
 </script>
 
 <template>
-  <button class="btn-texto avisar" :class="{ hecho: aviso }" @click="abrir">
-    {{ aviso ? '⚠️ Carta avisada · cambiar' : '⚠️ ¿Esta carta tiene un error?' }}
+  <button
+    type="button"
+    class="avisar"
+    :class="{ hecho: aviso, solo: !frase }"
+    :aria-label="aviso ? 'Carta avisada: cambiar el aviso' : 'Avisar de un error en esta carta'"
+    @click="abrir"
+  >
+    <span aria-hidden="true">⚠️</span>
+    <span v-if="frase" aria-hidden="true">{{ aviso ? 'Carta avisada' : '¿Error en la carta?' }}</span>
+    <span v-else-if="aviso" class="check" aria-hidden="true">✓</span>
   </button>
 
   <dialog ref="dialogo" class="dialogo" aria-labelledby="titulo-avisar" @close="abierto = false" @click="cerrarSiFondo">
@@ -74,7 +83,10 @@ function cerrarSiFondo(e: MouseEvent) {
         <textarea v-model="comentario" rows="3" :maxlength="MAX_COMENTARIO" placeholder="Por ejemplo: en la Biblia pone otra cosa" />
       </label>
 
-      <p class="suave">Se guarda en este dispositivo. Desde la portada puedes ver la lista, copiarla o compartirla.</p>
+      <p v-if="avisos.envioActivo" class="suave">
+        Les llega a quienes hacen el juego para revisarla. Sin conexión, se envía en cuanto vuelva.
+      </p>
+      <p v-else class="suave">Se guarda en este dispositivo. Desde la portada puedes ver la lista, copiarla o compartirla.</p>
 
       <div class="botones">
         <button type="submit" class="btn btn-principal btn-bloque" :disabled="!motivo">
@@ -87,13 +99,35 @@ function cerrarSiFondo(e: MouseEvent) {
 </template>
 
 <style scoped>
+/* Pequeño y arriba, lejos del botón grande de abajo, para no pulsarlo sin querer */
 .avisar {
-  align-self: center;
-  font-size: 0.95rem;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mesa-claro);
+  color: var(--sobre-mesa-suave);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.avisar.solo {
+  min-width: 40px;
+  justify-content: center;
+  padding: 0 10px;
 }
 
 .avisar.hecho {
   color: var(--tema-profetas);
+}
+
+.check {
+  font-weight: 800;
 }
 
 .contenido {

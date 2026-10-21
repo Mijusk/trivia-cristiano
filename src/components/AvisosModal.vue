@@ -85,13 +85,19 @@ function cerrarSiFondo(e: MouseEvent) {
         <button class="dialogo-cerrar" aria-label="Cerrar la lista" @click="abierto = false">✕</button>
       </header>
 
-      <p class="suave">Cartas que habéis marcado durante las partidas para revisarlas.</p>
+      <p class="suave">
+        Cartas que habéis marcado durante las partidas para revisarlas.
+        <template v-if="avisos.envioActivo">Las enviadas ya han llegado a quienes hacen el juego.</template>
+      </p>
 
       <ul>
         <li v-for="{ aviso, carta } in lista" :key="aviso.cartaId">
           <div class="cabeza">
             <span class="punto" :style="{ background: INFO_TEMA[carta.tema].color }" />
             <span class="id">{{ carta.id }} · {{ INFO_PRUEBA[carta.prueba].nombre }}</span>
+            <span v-if="avisos.envioActivo" class="estado" :class="{ enviado: aviso.enviado }">
+              {{ aviso.enviado ? 'Enviado ✓' : 'Sin enviar' }}
+            </span>
             <button class="btn-texto quitar" :aria-label="`Quitar el aviso de ${carta.id}`" @click="avisos.quitar(aviso.cartaId)">
               Quitar
             </button>
@@ -166,6 +172,20 @@ li {
   flex: 1;
   color: var(--tinta-suave);
   font-size: 0.85rem;
+}
+
+.estado {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e3e5f1;
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.estado.enviado {
+  background: color-mix(in srgb, var(--acierto) 18%, transparent);
+  color: #23753d;
 }
 
 .quitar {
