@@ -85,6 +85,18 @@ describe('partida', () => {
     }
   })
 
+  it('solo con Vida Cristiana y con el Camino, salen también sus cartas', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'completa', { temas: ['vida'], incluirCamino: true })
+    let delCamino = 0
+    for (let i = 0; i < 200; i++) {
+      store.jugarCasilla(store.pendientes[i % store.pendientes.length])
+      expect(store.carta!.tema).toBe('vida')
+      if (store.carta!.camino) delCamino++
+    }
+    expect(delCamino).toBeGreaterThan(0)
+  })
+
   it('jugar una casilla saca una carta del nivel de la pareja', () => {
     const store = abrirJuego()
     store.nuevaPartida(PAREJAS, 'corta')

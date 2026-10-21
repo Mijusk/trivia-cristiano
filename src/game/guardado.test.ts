@@ -148,6 +148,17 @@ describe('leerPartida: temas y Camino', () => {
     expect(p).toMatchObject({ fase: 'turno', casilla: null, cartaId: null })
   })
 
+  it('una carta del Camino en una partida sin el Camino vuelve a la ruleta', () => {
+    const delCamino = CARTAS.find((c) => c.camino && c.prueba === 'pregunta')!
+    const datos = {
+      ...partidaActual(),
+      casilla: { tema: 'vida', prueba: 'pregunta' },
+      cartaId: delCamino.id,
+    }
+    expect(leerPartida(datos)!.fase).toBe('carta')
+    expect(leerPartida({ ...datos, incluirCamino: false })!.fase).toBe('turno')
+  })
+
   it('una victoria se comprueba con los temas de la partida', () => {
     const datos = { ...partidaActual(), fase: 'victoria', turno: 0, temas: ['nt'] }
     // La pareja 0 tiene nt:mimica: en corta, con solo el Nuevo Testamento, ha ganado.

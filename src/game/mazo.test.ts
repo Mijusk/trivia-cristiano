@@ -10,6 +10,12 @@ const ids = (prueba: Prueba, nivel: Nivel, tema?: Tema) =>
   )
 
 describe('banco de cartas', () => {
+  it('las cartas del Camino son todas de Vida Cristiana', () => {
+    const delCamino = CARTAS.filter((c) => c.camino)
+    expect(delCamino.length).toBeGreaterThan(0)
+    expect(delCamino.every((c) => c.tema === 'vida')).toBe(true)
+  })
+
   it('cada carta tiene un id único con el formato <prueba>-<número>', () => {
     expect(new Set(CARTAS.map((c) => c.id)).size).toBe(CARTAS.length)
     for (const c of CARTAS) expect(c.id).toMatch(new RegExp(`^${c.prueba}-\\d+$`))
@@ -135,8 +141,27 @@ describe('sacarCarta', () => {
     }
   })
 
-  it('cartaPermitida: solo cartas de los temas de la partida', () => {
+  it('con el Camino incluido, sus cartas se mezclan con las de Vida Cristiana', () => {
+    const todas = CARTAS.filter((c) => c.tema === 'vida' && c.prueba === 'mimica' && c.nivel === 'peques')
+    let usadas: string[] = []
+    const vistas = new Set<string>()
+    for (let i = 0; i < todas.length; i++) {
+      const s = sacarCarta('vida', 'mimica', 'peques', usadas, { temas: ['vida'], incluirCamino: true })
+      usadas = s.usadas
+      vistas.add(s.carta.id)
+    }
+    // Sin repetir han salido todas, las generales y las del Camino.
+    expect(vistas.size).toBe(todas.length)
+    expect([...vistas].some((id) => cartaPorId(id)!.camino)).toBe(true)
+    expect([...vistas].some((id) => !cartaPorId(id)!.camino)).toBe(true)
+  })
+
+  it('cartaPermitida: el Camino solo con Vida Cristiana y la opción encendida', () => {
+    const delCamino = CARTAS.find((c) => c.camino)!
     const general = CARTAS.find((c) => c.tema === 'vida' && !c.camino)!
+    expect(cartaPermitida(delCamino, ['vida'], true)).toBe(true)
+    expect(cartaPermitida(delCamino, ['vida'], false)).toBe(false)
+    expect(cartaPermitida(delCamino, TEMAS_BIBLICOS, true)).toBe(false)
     expect(cartaPermitida(general, ['vida'], false)).toBe(true)
     expect(cartaPermitida(general, TEMAS_BIBLICOS, false)).toBe(false)
   })
