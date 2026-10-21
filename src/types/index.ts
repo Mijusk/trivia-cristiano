@@ -2,6 +2,8 @@ export type Tema = 'pentateuco' | 'historicos' | 'profetas' | 'nt' | 'vida'
 export type Prueba = 'pregunta' | 'dibujar' | 'describir' | 'mimica'
 export type Nivel = 'peques' | 'media' | 'experta'
 export type Modo = 'corta' | 'media' | 'completa'
+/** Dónde se dibuja en la prueba de dibujar: en papel o en la pizarra de la pantalla. */
+export type DibujarEn = 'papel' | 'pantalla'
 
 /** Una casilla de la ruleta: un tema jugado con una prueba concreta. */
 export interface Casilla {
@@ -72,13 +74,15 @@ export interface Pareja {
 export type Fase = 'turno' | 'carta' | 'resultado' | 'victoria'
 
 export interface Partida {
-  version: 3
+  version: 4
   fase: Fase
   modo: Modo
   /** Temas con los que se juega, en el orden de TEMAS. Al menos uno. */
   temas: Tema[]
   /** Se mezclan las cartas del Camino Neocatecumenal con las de Vida Cristiana. */
   incluirCamino: boolean
+  /** Dónde se dibuja por defecto; en cada carta se puede cambiar solo para ese turno. */
+  dibujarEn: DibujarEn
   parejas: Pareja[]
   turno: number
   casilla: Casilla | null

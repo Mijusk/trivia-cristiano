@@ -81,7 +81,11 @@ function cerrarSiFondo(e: MouseEvent) {
           En Media y Experta el reloj arranca solo 3 segundos después de ver la carta: en las preguntas, en cuanto
           aparece; en el resto, la primera vez que quien actúa la mantiene pulsada. En Peques se arranca con el botón.
         </p>
-        <p class="suave">Para dibujar necesitaréis papel y boli.</p>
+        <p>
+          Para dibujar, al preparar la partida se elige si se hace en papel o en la pantalla. En la pantalla, quien
+          dibuja mira la carta y, cuando empieza el tiempo, el móvil se convierte en una pizarra con colores, grosores,
+          goma y deshacer; el dibujo sale luego en el resultado. En cada carta se puede cambiar solo para ese turno.
+        </p>
       </section>
 
       <button class="btn btn-principal btn-bloque" @click="abierto = false">Entendido</button>

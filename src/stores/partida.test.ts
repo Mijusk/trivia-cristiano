@@ -180,6 +180,59 @@ describe('partida', () => {
   })
 })
 
+describe('dibujar en la pantalla', () => {
+  const DIBUJO = { proporcion: 1.2, trazos: [{ color: '#1b1d33', grosor: 0.028, puntos: [0.1, 0.2, 0.3, 0.4] }] }
+  const DIBUJAR: Casilla = { tema: 'nt', prueba: 'dibujar' }
+
+  it('por defecto se dibuja en papel; si se elige, en la pantalla', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta')
+    expect(store.partida!.dibujarEn).toBe('papel')
+    expect(store.dibujarAhora).toBe('papel')
+    store.nuevaPartida(PAREJAS, 'corta', { dibujarEn: 'pantalla' })
+    expect(store.dibujarAhora).toBe('pantalla')
+  })
+
+  it('cambiar a papel vale solo para el turno, aunque se cambie de carta', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { dibujarEn: 'pantalla' })
+    store.jugarCasilla(DIBUJAR)
+    store.cambiarDibujarEn('papel')
+    store.otraCarta()
+    expect(store.dibujarAhora).toBe('papel')
+    expect(store.partida!.dibujarEn).toBe('pantalla')
+    store.resolver(false)
+    store.siguienteTurno()
+    expect(store.dibujarAhora).toBe('pantalla')
+  })
+
+  it('el dibujo se ve en el resultado y se borra al pasar el turno o al sacar otra carta', () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { dibujarEn: 'pantalla' })
+    store.jugarCasilla(DIBUJAR)
+    store.guardarDibujo(DIBUJO)
+    store.resolver(true)
+    expect(store.dibujo).toEqual(DIBUJO)
+    store.siguienteTurno()
+    expect(store.dibujo).toBeNull()
+
+    store.jugarCasilla(DIBUJAR)
+    store.guardarDibujo(DIBUJO)
+    store.otraCarta()
+    expect(store.dibujo).toBeNull()
+  })
+
+  it('el dibujo no se guarda con la partida', async () => {
+    const store = abrirJuego()
+    store.nuevaPartida(PAREJAS, 'corta', { dibujarEn: 'pantalla' })
+    store.jugarCasilla(DIBUJAR)
+    store.guardarDibujo(DIBUJO)
+    await nextTick()
+    expect(almacen.getItem(CLAVE)).not.toContain('trazos')
+    expect(abrirJuego().dibujo).toBeNull()
+  })
+})
+
 describe('guardado', () => {
   it('guarda la partida en cada cambio y se puede continuar al volver', async () => {
     const store = abrirJuego()

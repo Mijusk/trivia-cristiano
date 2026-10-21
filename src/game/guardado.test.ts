@@ -23,13 +23,14 @@ const partidaV1 = () => ({
   tiempos: { pregunta: 30, actuar: 60, mimica: 90 },
 })
 
-/** La misma partida guardada con la versión actual, jugando con los cinco temas. */
+/** La misma partida guardada con la versión actual, jugando con los cinco temas y dibujando en la pantalla. */
 const partidaActual = () => ({
   ...partidaV1(),
   version: VERSION_PARTIDA,
   mazoReiniciado: true,
   temas: [...TEMAS],
   incluirCamino: true,
+  dibujarEn: 'pantalla',
 })
 
 describe('leerPartida: migración', () => {
@@ -41,12 +42,29 @@ describe('leerPartida: migración', () => {
       mazoReiniciado: false,
       temas: TEMAS_BIBLICOS,
       incluirCamino: false,
+      dibujarEn: 'papel',
     })
   })
 
   it('una partida de v2 (sin elegir temas) se juega con los cuatro bíblicos y sin el Camino', () => {
     const p = leerPartida({ ...partidaV1(), version: 2, mazoReiniciado: true })
-    expect(p).toEqual({ ...partidaV1(), version: VERSION_PARTIDA, mazoReiniciado: true, temas: TEMAS_BIBLICOS, incluirCamino: false })
+    expect(p).toEqual({
+      ...partidaV1(),
+      version: VERSION_PARTIDA,
+      mazoReiniciado: true,
+      temas: TEMAS_BIBLICOS,
+      incluirCamino: false,
+      dibujarEn: 'papel',
+    })
+  })
+
+  it('una partida de v3 (antes de la pizarra) se sigue dibujando en papel', () => {
+    const { dibujarEn: _, ...v3 } = { ...partidaActual(), version: 3 }
+    expect(leerPartida(v3)).toEqual({ ...partidaActual(), dibujarEn: 'papel' })
+  })
+
+  it('si no se entiende dónde se dibuja, se dibuja en papel', () => {
+    expect(leerPartida({ ...partidaActual(), dibujarEn: 'pared' })?.dibujarEn).toBe('papel')
   })
 
   it('una partida de la versión actual se lee igual', () => {

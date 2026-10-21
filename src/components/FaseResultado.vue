@@ -5,6 +5,7 @@ import { temaCompleto } from '../game/reglas'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
 import AvisarCarta from './AvisarCarta.vue'
+import DibujoVista from './DibujoVista.vue'
 
 const store = usePartidaStore()
 const partida = computed(() => store.partida!)
@@ -24,9 +25,9 @@ const solucion = computed(() => {
 </script>
 
 <template>
-  <section class="resultado" :class="acierto ? 'bien' : 'mal'" aria-live="polite">
+  <section class="resultado" :class="[acierto ? 'bien' : 'mal', { 'con-dibujo': store.dibujo }]" aria-live="polite">
     <div class="centro">
-      <Quesera :pareja="pareja" :modo="partida.modo" :temas="partida.temas" :tamano="150" class="ficha" />
+      <Quesera :pareja="pareja" :modo="partida.modo" :temas="partida.temas" :tamano="store.dibujo ? 96 : 150" class="ficha" />
       <h1 v-if="acierto">¡Quesito para {{ pareja.nombre }}!</h1>
       <h1 v-else>Esta vez no</h1>
       <p v-if="acierto" class="detalle">
@@ -34,6 +35,7 @@ const solucion = computed(() => {
         <template v-if="completado"> Tema completado.</template>
       </p>
       <p v-else class="detalle">Era: <strong>{{ solucion }}</strong></p>
+      <DibujoVista v-if="store.dibujo" :dibujo="store.dibujo" class="dibujo" :style="{ aspectRatio: `1 / ${store.dibujo.proporcion}` }" />
     </div>
 
     <div class="acciones">
@@ -73,6 +75,27 @@ h1 {
   margin: 0;
   color: var(--sobre-mesa-suave);
   font-size: 1.1rem;
+}
+
+/* El dibujo de la pizarra, sin pasarse de alto para que quepa todo sin hacer scroll */
+.dibujo {
+  height: min(36dvh, 340px);
+  max-width: 100%;
+  margin-top: 4px;
+}
+
+@media (max-height: 760px) {
+  .con-dibujo .centro {
+    gap: 10px;
+  }
+
+  .con-dibujo h1 {
+    font-size: 1.6rem;
+  }
+
+  .con-dibujo .dibujo {
+    height: 24dvh;
+  }
 }
 
 .detalle strong {
