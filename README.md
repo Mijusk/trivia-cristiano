@@ -32,7 +32,11 @@ npm run check:cards  # valida el banco de tarjetas
 npm test             # tests (Vitest); npm run test:watch los repite al guardar
 ```
 
-Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado y el store de la partida.
+Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado, avisos y los stores de la partida y de los avisos.
+
+### Avisos de cartas con errores
+
+En la pantalla de resultado (y en la de victoria) está «⚠️ ¿Esta carta tiene un error?»: se elige el motivo, se puede añadir un comentario y la carta queda marcada en ese dispositivo (`localStorage`, `trivia-cristiano/avisos/v1`), aunque se termine la partida. Si hay alguna, la portada muestra «Cartas con aviso (N)» con la lista para copiarla o compartirla, una línea por carta con su `id`, tema, prueba y nivel, para buscarla en `src/data/`. Código en `src/game/avisos.ts`, `src/stores/avisos.ts` y los componentes `AvisarCarta.vue` y `AvisosModal.vue`.
 
 Stack: Vite + Vue 3 + TypeScript + Pinia. Sin backend.
 

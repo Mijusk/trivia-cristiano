@@ -164,6 +164,52 @@ button {
   box-shadow: var(--sombra-carta);
 }
 
+/* Ventana modal (<dialog>): reglas, avisar de una carta y lista de avisos */
+.dialogo {
+  width: min(100% - 32px, 460px);
+  max-height: min(100dvh - 48px, 760px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-carta);
+  background: var(--carta);
+  color: var(--tinta);
+  box-shadow: var(--sombra-carta);
+}
+
+.dialogo::backdrop {
+  background: rgba(10, 10, 30, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+.dialogo[open] {
+  animation: dialogo-entra 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.dialogo-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dialogo-cerrar {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #eceef8;
+  cursor: pointer;
+}
+
+@keyframes dialogo-entra {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+}
+
 .visualmente-oculto {
   position: absolute;
   width: 1px;
