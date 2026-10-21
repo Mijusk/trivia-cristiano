@@ -27,7 +27,10 @@ npm install
 npm run dev          # servidor local
 npm run build        # comprobación de tipos + build de producción
 npm run check:cards  # valida el banco de tarjetas
+npm test             # tests (Vitest); npm run test:watch los repite al guardar
 ```
+
+Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado y el store de la partida.
 
 Stack: Vite + Vue 3 + TypeScript + Pinia. Sin backend.
 
