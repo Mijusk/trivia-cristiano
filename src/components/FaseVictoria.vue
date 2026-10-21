@@ -3,9 +3,11 @@ import { computed } from 'vue'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
 import AvisarCarta from './AvisarCarta.vue'
+import { useAvisosStore } from '../stores/avisos'
 import DibujoVista from './DibujoVista.vue'
 
 const store = usePartidaStore()
+const fraseAviso = useAvisosStore().verFrase(store.parejaActual!.id)
 const partida = computed(() => store.partida!)
 const ganadora = computed(() => store.ganadora ?? store.parejaActual!)
 
@@ -21,6 +23,8 @@ function salir() {
 
 <template>
   <section class="victoria" aria-live="polite">
+    <!-- La carta con la que se ganó, por si tenía algún error. -->
+    <AvisarCarta v-if="store.carta" :carta="store.carta" :frase="fraseAviso" class="aviso-arriba" />
     <div class="centro">
       <Quesera :pareja="ganadora" :modo="partida.modo" :temas="partida.temas" :tamano="180" class="ficha" />
       <p class="gana">Ha ganado</p>
@@ -30,8 +34,6 @@ function salir() {
     <div class="acciones">
       <button class="btn btn-principal btn-bloque" @click="revancha">Jugar otra vez</button>
       <button class="btn btn-secundario btn-bloque" @click="salir">Terminar</button>
-      <!-- La carta con la que se ganó, por si tenía algún error. -->
-      <AvisarCarta v-if="store.carta" :carta="store.carta" />
     </div>
   </section>
 </template>
@@ -41,6 +43,10 @@ function salir() {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.aviso-arriba {
+  margin-top: -10px;
 }
 
 .centro {

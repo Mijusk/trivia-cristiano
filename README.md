@@ -37,7 +37,17 @@ Los tests están junto al código (`*.test.ts`): reglas, mazo, guardado, avisos,
 
 ### Avisos de cartas con errores
 
-En la pantalla de resultado (y en la de victoria) está «⚠️ ¿Esta carta tiene un error?»: se elige el motivo, se puede añadir un comentario y la carta queda marcada en ese dispositivo (`localStorage`, `trivia-cristiano/avisos/v1`), aunque se termine la partida. Si hay alguna, la portada muestra «Cartas con aviso (N)» con la lista para copiarla o compartirla, una línea por carta con su `id`, tema, prueba y nivel, para buscarla en `src/data/`. Código en `src/game/avisos.ts`, `src/stores/avisos.ts` y los componentes `AvisarCarta.vue` y `AvisosModal.vue`.
+En la pantalla de resultado (y en la de victoria), arriba a la derecha, está «⚠️ ¿Error en la carta?»: la frase sale la primera vez que cada pareja llega al resultado y después solo el icono, lejos del botón grande de abajo para no pulsarlo sin querer. Se elige el motivo, se puede añadir un comentario y el aviso se guarda en el dispositivo (`localStorage`, `trivia-cristiano/avisos/v1`), aunque se termine la partida. Si hay alguno, la portada muestra «Cartas con aviso (N)» con la lista para copiarla o compartirla, una línea por carta con su `id`, tema, prueba y nivel, para buscarla en `src/data/`. Código en `src/game/avisos.ts`, `src/stores/avisos.ts` y los componentes `AvisarCarta.vue` y `AvisosModal.vue`.
+
+**Envío a una hoja de Drive y por correo.** Si está configurada la URL de envío, cada aviso se manda además a una hoja de cálculo de Google y llega un correo. Sin conexión se queda «Sin enviar» y se reintenta al abrir el juego y al volver la conexión; cambiar un aviso lo vuelve a enviar (sale como fila nueva). Quitar un aviso de la lista del móvil no lo borra de la hoja. Para instalarlo (una vez):
+
+1. En Google Drive, crea la carpeta `trivia-cristiano` y dentro una hoja de cálculo llamada `errores-app`.
+2. En la hoja: **Extensiones → Apps Script**. Borra lo que haya y pega el contenido de [`scripts/avisos-apps-script.gs`](scripts/avisos-apps-script.gs). Guarda.
+3. Elige la función `probar` y pulsa **Ejecutar**. Google pedirá permisos (para la hoja y para mandar correo): acéptalos. Debe aparecer la pestaña «Avisos» con una fila de prueba y llegar un correo.
+4. **Implementar → Nueva implementación → Aplicación web**. «Ejecutar como»: *Yo*; «Quién tiene acceso»: *Cualquier usuario*. Copia la URL que termina en `/exec`.
+5. Pon esa URL en `URL_PUBLICADA` en `src/game/avisos.ts` (o en la variable de entorno `VITE_URL_AVISOS` al compilar) y vuelve a publicar el juego.
+
+Si cambias el script, hay que publicarlo otra vez (**Implementar → Gestionar implementaciones → Editar → Nueva versión**) para que la URL use el código nuevo. La URL no es secreta (va dentro de la web), así que el script solo acepta avisos con la forma del juego y recorta los textos.
 
 Stack: Vite + Vue 3 + TypeScript + Pinia. Sin backend.
 

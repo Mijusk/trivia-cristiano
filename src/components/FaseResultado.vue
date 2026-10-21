@@ -5,9 +5,12 @@ import { temaCompleto } from '../game/reglas'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
 import AvisarCarta from './AvisarCarta.vue'
+import { useAvisosStore } from '../stores/avisos'
 import DibujoVista from './DibujoVista.vue'
 
 const store = usePartidaStore()
+// La frase del botón de avisar solo sale la primera vez que cada pareja llega aquí.
+const fraseAviso = useAvisosStore().verFrase(store.parejaActual!.id)
 const partida = computed(() => store.partida!)
 const pareja = computed(() => store.parejaActual!)
 const acierto = computed(() => partida.value.ultimoAcierto === true)
@@ -26,6 +29,7 @@ const solucion = computed(() => {
 
 <template>
   <section class="resultado" :class="[acierto ? 'bien' : 'mal', { 'con-dibujo': store.dibujo }]" aria-live="polite">
+    <AvisarCarta v-if="store.carta" :carta="store.carta" :frase="fraseAviso" class="aviso-arriba" />
     <div class="centro">
       <Quesera :pareja="pareja" :modo="partida.modo" :temas="partida.temas" :tamano="store.dibujo ? 96 : 150" class="ficha" />
       <h1 v-if="acierto">¡Quesito para {{ pareja.nombre }}!</h1>
@@ -42,7 +46,6 @@ const solucion = computed(() => {
       <button class="btn btn-principal btn-bloque" @click="store.siguienteTurno()">
         Turno de {{ siguiente.nombre }}
       </button>
-      <AvisarCarta v-if="store.carta" :carta="store.carta" />
     </div>
   </section>
 </template>
@@ -52,6 +55,10 @@ const solucion = computed(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.aviso-arriba {
+  margin-top: -10px;
 }
 
 .centro {
