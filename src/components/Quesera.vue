@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Modo, Pareja } from '../types'
-import { INFO_TEMA, META_POR_TEMA, TEMAS } from '../game/config'
+import type { Modo, Pareja, Tema } from '../types'
+import { INFO_TEMA, META_POR_TEMA } from '../game/config'
 import { progresoTema } from '../game/reglas'
 
 /**
- * La "ficha" de cada pareja: un círculo con un cuarto por tema, dividido en
- * tantos huecos como quesitos pide el modo. Los huecos ganados se rellenan.
+ * La "ficha" de cada pareja: un círculo con un sector por cada tema de la
+ * partida, dividido en tantos huecos como quesitos pide el modo. Los huecos
+ * ganados se rellenan.
  */
-const props = withDefaults(defineProps<{ pareja: Pareja; modo: Modo; tamano?: number }>(), { tamano: 44 })
+const props = withDefaults(defineProps<{ pareja: Pareja; modo: Modo; temas: Tema[]; tamano?: number }>(), {
+  tamano: 44,
+})
 
 const R = 50
 
@@ -18,18 +21,21 @@ function punto(radio: number, grados: number) {
 }
 
 function cuña(inicio: number, fin: number) {
+  // Un solo tema con un solo quesito: el hueco es el círculo entero.
+  if (fin - inicio >= 360) return `M0 ${-R} A${R} ${R} 0 1 1 0 ${R} A${R} ${R} 0 1 1 0 ${-R} Z`
   const grande = fin - inicio > 180 ? 1 : 0
   return `M0 0 L${punto(R, inicio)} A${R} ${R} 0 ${grande} 1 ${punto(R, fin)} Z`
 }
 
 const huecos = computed(() => {
   const meta = META_POR_TEMA[props.modo]
-  const paso = 90 / meta
-  return TEMAS.flatMap((tema, t) => {
+  const sector = 360 / Math.max(1, props.temas.length)
+  const paso = sector / meta
+  return props.temas.flatMap((tema, t) => {
     const ganados = progresoTema(props.pareja, tema)
     return Array.from({ length: meta }, (_, j) => ({
       clave: `${tema}-${j}`,
-      d: cuña(t * 90 + j * paso, t * 90 + (j + 1) * paso),
+      d: cuña(t * sector + j * paso, t * sector + (j + 1) * paso),
       color: INFO_TEMA[tema].color,
       lleno: j < ganados,
     }))
@@ -37,7 +43,7 @@ const huecos = computed(() => {
 })
 
 const etiqueta = computed(() =>
-  TEMAS.map((t) => `${INFO_TEMA[t].nombre}: ${progresoTema(props.pareja, t)} de ${META_POR_TEMA[props.modo]}`).join('. '),
+  props.temas.map((t) => `${INFO_TEMA[t].nombre}: ${progresoTema(props.pareja, t)} de ${META_POR_TEMA[props.modo]}`).join('. '),
 )
 </script>
 

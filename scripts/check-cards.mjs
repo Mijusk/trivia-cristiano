@@ -2,7 +2,7 @@
 // entre las opciones y cuántas cartas hay en cada tema × prueba × nivel.
 import { readFileSync } from 'node:fs'
 
-const TEMAS = ['pentateuco', 'historicos', 'profetas', 'nt']
+const TEMAS = ['pentateuco', 'historicos', 'profetas', 'nt', 'vida']
 const NIVELES = ['peques', 'media', 'experta']
 const ARCHIVOS = { pregunta: 'preguntas', dibujar: 'dibujar', describir: 'describir', mimica: 'mimica' }
 const MINIMO = 3
@@ -39,6 +39,11 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     ids.add(c.id)
     if (!TEMAS.includes(c.tema)) fallo(`${donde}: tema "${c.tema}" no válido`)
     if (!NIVELES.includes(c.nivel)) fallo(`${donde}: nivel "${c.nivel}" no válido`)
+    // Cartas del Camino Neocatecumenal: solo en Vida Cristiana y solo salen si la partida lo incluye.
+    if ('camino' in c) {
+      if (typeof c.camino !== 'boolean') fallo(`${donde}: «camino» tiene que ser true o false`)
+      else if (c.tema !== 'vida') fallo(`${donde}: «camino» solo vale en el tema vida (ahora: ${c.tema})`)
+    }
     const texto = c.pregunta ?? c.palabra ?? c.adivinar
     if (!texto) fallo(`${donde}: falta el texto de la carta`)
     if (/Jehová/i.test(JSON.stringify(c))) fallo(`${donde}: usa «Jehová»; en la versión católica es «el Señor»`)
@@ -76,16 +81,18 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
           if (pista.includes(` ${normalizar(w)} `)) fallo(`${donde}: la pista usa «${w}»`)
       }
     }
-    const clave = `${c.tema}|${prueba}|${c.nivel}`
+    // Las del Camino se cuentan aparte: con la opción apagada, Vida Cristiana se juega sin ellas.
+    const clave = `${c.camino === true ? 'camino' : c.tema}|${prueba}|${c.nivel}`
     tabla[clave] = (tabla[clave] ?? 0) + 1
   })
   siguienteId[prueba] = `${prueba}-${mayor + 1}`
 }
 
 console.log('\nCartas por tema, prueba y nivel (peques / media / experta):\n')
-for (const tema of TEMAS) {
+for (const tema of [...TEMAS, 'camino']) {
   const fila = Object.keys(ARCHIVOS).map((p) => `${p}: ${NIVELES.map((n) => tabla[`${tema}|${p}|${n}`] ?? 0).join('/')}`)
   console.log(tema.padEnd(11), fila.join('   '))
+  if (tema === 'camino') continue
   for (const p of Object.keys(ARCHIVOS))
     for (const n of NIVELES)
       if ((tabla[`${tema}|${p}|${n}`] ?? 0) < MINIMO) fallo(`${tema} / ${p} / ${n}: menos de ${MINIMO} cartas`)

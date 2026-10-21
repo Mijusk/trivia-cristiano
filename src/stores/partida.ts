@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import type { Casilla, Modo, Nivel, Partida } from '../types'
-import { TIEMPOS_POR_DEFECTO } from '../game/config'
+import type { Casilla, Modo, Nivel, Partida, Tema } from '../types'
+import { TEMAS, TIEMPOS_POR_DEFECTO, ordenarTemas } from '../game/config'
 import { cartaPorId, sacarCarta } from '../game/mazo'
 import { VERSION_PARTIDA, leerPartida, limpiarUsadas } from '../game/guardado'
 import { casillasPendientes, claveCasilla, haGanado } from '../game/reglas'
@@ -48,21 +48,37 @@ export const usePartidaStore = defineStore('partida', () => {
   const parejaActual = computed(() => (partida.value ? partida.value.parejas[partida.value.turno] : null))
   const carta = computed(() => cartaPorId(partida.value?.cartaId ?? null))
   const pendientes = computed(() =>
-    partida.value && parejaActual.value ? casillasPendientes(parejaActual.value, partida.value.modo) : [],
+    partida.value && parejaActual.value
+      ? casillasPendientes(parejaActual.value, partida.value.modo, partida.value.temas)
+      : [],
   )
   const ganadora = computed(() =>
-    partida.value ? (partida.value.parejas.find((p) => haGanado(p, partida.value!.modo)) ?? null) : null,
+    partida.value
+      ? (partida.value.parejas.find((p) => haGanado(p, partida.value!.modo, partida.value!.temas)) ?? null)
+      : null,
   )
 
   function irA(destino: Pantalla) {
     pantalla.value = destino
   }
 
-  function nuevaPartida(parejas: { nombre: string; nivel: Nivel }[], modo: Modo) {
+  /**
+   * Empieza una partida con los temas elegidos (todos si no se elige ninguno).
+   * El Camino solo se incluye si se juega con Vida Cristiana.
+   */
+  function nuevaPartida(
+    parejas: { nombre: string; nivel: Nivel }[],
+    modo: Modo,
+    { temas = TEMAS, incluirCamino = false }: { temas?: Tema[]; incluirCamino?: boolean } = {},
+  ) {
+    const elegidos = ordenarTemas(temas)
+    const temasPartida = elegidos.length > 0 ? elegidos : [...TEMAS]
     partida.value = {
       version: VERSION_PARTIDA,
       fase: 'turno',
       modo,
+      temas: temasPartida,
+      incluirCamino: incluirCamino && temasPartida.includes('vida'),
       parejas: parejas.map((p, i) => ({
         id: `p${i}-${Date.now().toString(36)}`,
         nombre: p.nombre.trim() || `Pareja ${i + 1}`,
@@ -88,7 +104,11 @@ export const usePartidaStore = defineStore('partida', () => {
     const p = partida.value
     const pareja = parejaActual.value
     if (!p || !pareja) return
-    const sacada = sacarCarta(casilla.tema, casilla.prueba, pareja.nivel, p.usadas, evitar)
+    const sacada = sacarCarta(casilla.tema, casilla.prueba, pareja.nivel, p.usadas, {
+      evitar,
+      temas: p.temas,
+      incluirCamino: p.incluirCamino,
+    })
     p.casilla = casilla
     p.cartaId = sacada.carta.id
     p.cartaDeOtroTema = sacada.deOtroTema
@@ -123,7 +143,7 @@ export const usePartidaStore = defineStore('partida', () => {
       const clave = claveCasilla(p.casilla)
       if (!pareja.ganadas.includes(clave)) pareja.ganadas.push(clave)
     }
-    p.fase = acierto && haGanado(pareja, p.modo) ? 'victoria' : 'resultado'
+    p.fase = acierto && haGanado(pareja, p.modo, p.temas) ? 'victoria' : 'resultado'
   }
 
   function siguienteTurno() {

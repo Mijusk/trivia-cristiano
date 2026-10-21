@@ -182,6 +182,11 @@ path.apagada {
   opacity: 0.35;
 }
 
+/* Halo claro para que los iconos oscuros (🗣️) se lean sobre cualquier color, también el morado. */
+.giro text {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9));
+}
+
 .centro {
   fill: var(--mesa);
   stroke: var(--sobre-mesa);

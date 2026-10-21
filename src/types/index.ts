@@ -1,4 +1,4 @@
-export type Tema = 'pentateuco' | 'historicos' | 'profetas' | 'nt'
+export type Tema = 'pentateuco' | 'historicos' | 'profetas' | 'nt' | 'vida'
 export type Prueba = 'pregunta' | 'dibujar' | 'describir' | 'mimica'
 export type Nivel = 'peques' | 'media' | 'experta'
 export type Modo = 'corta' | 'media' | 'completa'
@@ -17,6 +17,8 @@ interface CartaBase {
   tema: Tema
   nivel: Nivel
   referencia?: string
+  /** Carta del Camino Neocatecumenal (solo en Vida Cristiana): sale solo si la partida lo incluye. */
+  camino?: boolean
 }
 
 export interface CartaPregunta extends CartaBase {
@@ -70,9 +72,13 @@ export interface Pareja {
 export type Fase = 'turno' | 'carta' | 'resultado' | 'victoria'
 
 export interface Partida {
-  version: 2
+  version: 3
   fase: Fase
   modo: Modo
+  /** Temas con los que se juega, en el orden de TEMAS. Al menos uno. */
+  temas: Tema[]
+  /** Se mezclan las cartas del Camino Neocatecumenal con las de Vida Cristiana. */
+  incluirCamino: boolean
   parejas: Pareja[]
   turno: number
   casilla: Casilla | null

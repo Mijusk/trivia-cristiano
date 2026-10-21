@@ -16,7 +16,12 @@ const reglasAbiertas = ref(false)
 <template>
   <main v-if="store.partida" class="pantalla juego">
     <header class="barra">
-      <Marcador :parejas="store.partida.parejas" :modo="store.partida.modo" :turno="store.partida.turno" />
+      <Marcador
+        :parejas="store.partida.parejas"
+        :modo="store.partida.modo"
+        :temas="store.partida.temas"
+        :turno="store.partida.turno"
+      />
       <BotonSonido class="sonido-juego" />
       <button class="salir" aria-label="Ver las reglas" @click="reglasAbiertas = true">?</button>
       <button class="salir" aria-label="Salir al inicio (la partida queda guardada)" @click="store.irA('inicio')">

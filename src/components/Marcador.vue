@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { Modo, Pareja } from '../types'
+import type { Modo, Pareja, Tema } from '../types'
 import Quesera from './Quesera.vue'
 
-defineProps<{ parejas: Pareja[]; modo: Modo; turno: number }>()
+defineProps<{ parejas: Pareja[]; modo: Modo; temas: Tema[]; turno: number }>()
 </script>
 
 <template>
   <ol class="marcador" aria-label="Marcador">
     <li v-for="(p, i) in parejas" :key="p.id" :class="{ actual: i === turno }" :aria-current="i === turno ? 'true' : undefined">
-      <Quesera :pareja="p" :modo="modo" :tamano="38" />
+      <Quesera :pareja="p" :modo="modo" :temas="temas" :tamano="38" />
       <span class="nombre">{{ p.nombre }}</span>
     </li>
   </ol>

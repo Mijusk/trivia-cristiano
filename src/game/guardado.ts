@@ -1,9 +1,9 @@
 import type { Casilla, CasillaKey, Fase, Pareja, Partida } from '../types'
-import { MODOS, NIVELES, PRUEBAS, TEMAS, TIEMPOS_POR_DEFECTO } from './config'
-import { existeCarta } from './mazo'
+import { MODOS, NIVELES, PRUEBAS, TEMAS, TEMAS_BIBLICOS, TIEMPOS_POR_DEFECTO, ordenarTemas } from './config'
+import { cartaPermitida, cartaPorId, existeCarta } from './mazo'
 import { haGanado } from './reglas'
 
-export const VERSION_PARTIDA = 2
+export const VERSION_PARTIDA = 3
 
 const FASES: Fase[] = ['turno', 'carta', 'resultado', 'victoria']
 
@@ -39,7 +39,12 @@ function migrarV1(datos: Objeto): Objeto {
   return { ...datos, version: 2, mazoReiniciado: false }
 }
 
-const MIGRACIONES: Record<number, (datos: Objeto) => Objeto> = { 1: migrarV1 }
+/** v2 → v3: se eligen los temas. Las partidas de antes se jugaban con los cuatro bíblicos y sin el Camino. */
+function migrarV2(datos: Objeto): Objeto {
+  return { ...datos, version: 3, temas: [...TEMAS_BIBLICOS], incluirCamino: false }
+}
+
+const MIGRACIONES: Record<number, (datos: Objeto) => Objeto> = { 1: migrarV1, 2: migrarV2 }
 
 /**
  * Convierte lo que haya guardado en una partida válida de la versión actual,
@@ -61,12 +66,17 @@ export function leerPartida(datos: unknown): Partida | null {
   const parejas = actual.parejas.map(leerPareja)
   if (parejas.length < 1 || parejas.some((p) => p === null)) return null
   const modo = actual.modo
+  const elegidos = Array.isArray(actual.temas) ? ordenarTemas(actual.temas) : []
+  const temas = elegidos.length > 0 ? elegidos : [...TEMAS_BIBLICOS]
 
   const tiempos = esObjeto(actual.tiempos) ? actual.tiempos : {}
   const partida: Partida = {
     version: VERSION_PARTIDA,
     fase: esUno(FASES, actual.fase) ? actual.fase : 'turno',
     modo,
+    temas,
+    // El Camino solo tiene sentido jugando con Vida Cristiana.
+    incluirCamino: actual.incluirCamino === true && temas.includes('vida'),
     parejas: parejas as Pareja[],
     turno: Number.isInteger(actual.turno) && (actual.turno as number) >= 0 && (actual.turno as number) < parejas.length ? (actual.turno as number) : 0,
     casilla: esCasilla(actual.casilla) ? { tema: actual.casilla.tema, prueba: actual.casilla.prueba } : null,
@@ -85,10 +95,15 @@ export function leerPartida(datos: unknown): Partida | null {
   }
 
   const sinCarta = partida.casilla === null || partida.cartaId === null
+  // La casilla o la carta del turno no son de esta partida (otro tema, o del Camino sin incluirlo).
+  const carta = cartaPorId(partida.cartaId)
+  const fueraDeLaPartida =
+    (partida.casilla !== null && !temas.includes(partida.casilla.tema)) ||
+    (carta !== undefined && !cartaPermitida(carta, temas, partida.incluirCamino))
   const turnoRoto =
-    (partida.fase === 'carta' && sinCarta) ||
-    (partida.fase === 'resultado' && (partida.casilla === null || partida.ultimoAcierto === null)) ||
-    (partida.fase === 'victoria' && !haGanado(partida.parejas[partida.turno], modo))
+    (partida.fase === 'carta' && (sinCarta || fueraDeLaPartida)) ||
+    (partida.fase === 'resultado' && (partida.casilla === null || partida.ultimoAcierto === null || fueraDeLaPartida)) ||
+    (partida.fase === 'victoria' && !haGanado(partida.parejas[partida.turno], modo, temas))
   if (turnoRoto) {
     Object.assign(partida, {
       fase: 'turno',

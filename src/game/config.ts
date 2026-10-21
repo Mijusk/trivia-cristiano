@@ -1,15 +1,27 @@
 import type { Modo, Nivel, Prueba, Tema, TipoCarta } from '../types'
 
-export const TEMAS: Tema[] = ['pentateuco', 'historicos', 'profetas', 'nt']
+export const TEMAS: Tema[] = ['pentateuco', 'historicos', 'profetas', 'nt', 'vida']
+/** Los cuatro temas de la Biblia: con ellos se cargan las partidas guardadas antes de poder elegir. */
+export const TEMAS_BIBLICOS: Tema[] = ['pentateuco', 'historicos', 'profetas', 'nt']
 export const PRUEBAS: Prueba[] = ['pregunta', 'dibujar', 'describir', 'mimica']
 export const NIVELES: Nivel[] = ['peques', 'media', 'experta']
 export const MODOS: Modo[] = ['corta', 'media', 'completa']
 
-export const INFO_TEMA: Record<Tema, { nombre: string; libros: string; color: string }> = {
-  pentateuco: { nombre: 'Pentateuco', libros: 'Génesis – Deuteronomio', color: 'var(--tema-pentateuco)' },
-  historicos: { nombre: 'Históricos', libros: 'Josué – Macabeos', color: 'var(--tema-historicos)' },
-  profetas: { nombre: 'Profetas y Sapienciales', libros: 'Job – Malaquías', color: 'var(--tema-profetas)' },
-  nt: { nombre: 'Nuevo Testamento', libros: 'Mateo – Apocalipsis', color: 'var(--tema-nt)' },
+export const INFO_TEMA: Record<Tema, { nombre: string; descripcion: string; color: string }> = {
+  pentateuco: { nombre: 'Pentateuco', descripcion: 'Génesis – Deuteronomio', color: 'var(--tema-pentateuco)' },
+  historicos: { nombre: 'Históricos', descripcion: 'Josué – Macabeos', color: 'var(--tema-historicos)' },
+  profetas: { nombre: 'Profetas y Sapienciales', descripcion: 'Job – Malaquías', color: 'var(--tema-profetas)' },
+  nt: { nombre: 'Nuevo Testamento', descripcion: 'Mateo – Apocalipsis', color: 'var(--tema-nt)' },
+  vida: {
+    nombre: 'Vida Cristiana',
+    descripcion: 'Misa, sacramentos, año litúrgico, santos y oraciones',
+    color: 'var(--tema-vida)',
+  },
+}
+
+/** Deja solo temas válidos, sin repetir y en el orden de TEMAS (el de la ruleta y la quesera). */
+export function ordenarTemas(lista: readonly unknown[]): Tema[] {
+  return TEMAS.filter((t) => lista.includes(t))
 }
 
 export const INFO_PRUEBA: Record<Prueba, { nombre: string; icono: string; instruccion: string }> = {
@@ -28,10 +40,23 @@ export const INFO_NIVEL: Record<Nivel, { nombre: string; descripcion: string }> 
 /** Quesitos que hay que ganar de cada tema para completarlo. */
 export const META_POR_TEMA: Record<Modo, number> = { corta: 1, media: 2, completa: 4 }
 
-export const INFO_MODO: Record<Modo, { nombre: string; descripcion: string }> = {
-  corta: { nombre: 'Corta', descripcion: '1 quesito de cada tema, unos 45 min' },
-  media: { nombre: 'Media', descripcion: '2 quesitos de cada tema, unos 90 min' },
-  completa: { nombre: 'Completa', descripcion: 'Las 16 casillas, más de 2 horas' },
+export const INFO_MODO: Record<Modo, { nombre: string }> = {
+  corta: { nombre: 'Corta' },
+  media: { nombre: 'Media' },
+  completa: { nombre: 'Completa' },
+}
+
+/** Lo que dura cada modo jugando con los cuatro temas bíblicos; con más o menos temas se escala. */
+const MINUTOS_CON_CUATRO_TEMAS: Record<Modo, number> = { corta: 45, media: 90, completa: 150 }
+
+/** «1 quesito de cada tema, unos 45 min»: depende de con cuántos temas se juegue. */
+export function descripcionModo(modo: Modo, numTemas: number): string {
+  const meta = META_POR_TEMA[modo]
+  const minutos = (MINUTOS_CON_CUATRO_TEMAS[modo] * numTemas) / 4
+  const duracion =
+    minutos >= 120 ? `más de ${Math.floor(minutos / 60)} horas` : `unos ${Math.max(5, Math.round(minutos / 5) * 5)} min`
+  const casillas = modo === 'completa' ? `Las ${meta * numTemas} casillas` : `${meta} quesito${meta > 1 ? 's' : ''} de cada tema`
+  return `${casillas}, ${duracion}`
 }
 
 export const TIEMPOS_POR_DEFECTO = { pregunta: 30, actuar: 60, mimica: 90 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { TIEMPOS_POR_DEFECTO } from './config'
+import { TEMAS, TEMAS_BIBLICOS, TIEMPOS_POR_DEFECTO } from './config'
 import { VERSION_PARTIDA, leerPartida, limpiarUsadas } from './guardado'
+import { CARTAS } from './mazo'
 
 /** Una partida tal y como la guardaba la versión 1, a mitad de un turno. */
 const partidaV1 = () => ({
@@ -22,14 +23,34 @@ const partidaV1 = () => ({
   tiempos: { pregunta: 30, actuar: 60, mimica: 90 },
 })
 
+/** La misma partida guardada con la versión actual, jugando con los cinco temas. */
+const partidaActual = () => ({
+  ...partidaV1(),
+  version: VERSION_PARTIDA,
+  mazoReiniciado: true,
+  temas: [...TEMAS],
+  incluirCamino: true,
+})
+
 describe('leerPartida: migración', () => {
   it('pasa una partida de v1 a la versión actual sin perder nada', () => {
     const p = leerPartida(partidaV1())
-    expect(p).toEqual({ ...partidaV1(), version: VERSION_PARTIDA, mazoReiniciado: false })
+    expect(p).toEqual({
+      ...partidaV1(),
+      version: VERSION_PARTIDA,
+      mazoReiniciado: false,
+      temas: TEMAS_BIBLICOS,
+      incluirCamino: false,
+    })
+  })
+
+  it('una partida de v2 (sin elegir temas) se juega con los cuatro bíblicos y sin el Camino', () => {
+    const p = leerPartida({ ...partidaV1(), version: 2, mazoReiniciado: true })
+    expect(p).toEqual({ ...partidaV1(), version: VERSION_PARTIDA, mazoReiniciado: true, temas: TEMAS_BIBLICOS, incluirCamino: false })
   })
 
   it('una partida de la versión actual se lee igual', () => {
-    const actual = { ...partidaV1(), version: VERSION_PARTIDA, mazoReiniciado: true }
+    const actual = partidaActual()
     expect(leerPartida(actual)).toEqual(actual)
   })
 
@@ -103,6 +124,46 @@ describe('leerPartida: reparaciones', () => {
 
   it('una fase desconocida vuelve a la ruleta', () => {
     expect(leerPartida({ ...partidaV1(), fase: 'pausa' })!.fase).toBe('turno')
+  })
+})
+
+describe('leerPartida: temas y Camino', () => {
+  it('ordena los temas y quita los que no existen o se repiten', () => {
+    const p = leerPartida({ ...partidaActual(), temas: ['vida', 'nt', 'cielo', 'vida', 'profetas'] })!
+    expect(p.temas).toEqual(['profetas', 'nt', 'vida'])
+  })
+
+  it('sin temas válidos se juega con los cuatro bíblicos', () => {
+    for (const temas of [[], ['cielo'], 'vida', undefined])
+      expect(leerPartida({ ...partidaActual(), temas, incluirCamino: false })!.temas).toEqual(TEMAS_BIBLICOS)
+  })
+
+  it('el Camino se apaga si no se juega con Vida Cristiana', () => {
+    expect(leerPartida({ ...partidaActual(), temas: ['nt'], incluirCamino: true })!.incluirCamino).toBe(false)
+    expect(leerPartida({ ...partidaActual(), temas: ['vida'], incluirCamino: 'sí' })!.incluirCamino).toBe(false)
+  })
+
+  it('una casilla de un tema que no está en la partida vuelve a la ruleta', () => {
+    const p = leerPartida({ ...partidaActual(), temas: ['nt', 'vida'] })!
+    expect(p).toMatchObject({ fase: 'turno', casilla: null, cartaId: null })
+  })
+
+  it('una carta del Camino en una partida sin el Camino vuelve a la ruleta', () => {
+    const delCamino = CARTAS.find((c) => c.camino && c.prueba === 'pregunta')!
+    const datos = {
+      ...partidaActual(),
+      casilla: { tema: 'vida', prueba: 'pregunta' },
+      cartaId: delCamino.id,
+    }
+    expect(leerPartida(datos)!.fase).toBe('carta')
+    expect(leerPartida({ ...datos, incluirCamino: false })!.fase).toBe('turno')
+  })
+
+  it('una victoria se comprueba con los temas de la partida', () => {
+    const datos = { ...partidaActual(), fase: 'victoria', turno: 0, temas: ['nt'] }
+    // La pareja 0 tiene nt:mimica: en corta, con solo el Nuevo Testamento, ha ganado.
+    expect(leerPartida(datos)!.fase).toBe('victoria')
+    expect(leerPartida({ ...datos, temas: ['nt', 'vida'] })!.fase).toBe('turno')
   })
 })
 

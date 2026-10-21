@@ -172,7 +172,9 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       <span class="icono" aria-hidden="true">{{ prueba.icono }}</span>
       <div class="titulos">
         <h1>{{ prueba.nombre }}</h1>
-        <p class="tema">{{ INFO_TEMA[casilla.tema].nombre }}</p>
+        <p class="tema">
+          {{ INFO_TEMA[casilla.tema].nombre }}<template v-if="carta.camino"> · Camino Neocatecumenal</template>
+        </p>
       </div>
       <div class="reloj">
         <Temporizador
