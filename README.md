@@ -47,7 +47,9 @@ src/
 
 El juego sigue la Biblia católica (versión de la Conferencia Episcopal Española), deuterocanónicos incluidos: «el Señor» y no «Jehová», nombres católicos (Abrahán, Baltasar…) y referencias en formato católico (`Gén 6,14`, `Sal 23 (22),1`, `Jon 2,1`).
 
-Cada tarjeta lleva `tema` (`pentateuco`, `historicos`, `profetas`, `nt`), `nivel` (`peques`, `media`, `experta`) y una `referencia` bíblica opcional.
+Cada tarjeta lleva `id`, `tema` (`pentateuco`, `historicos`, `profetas`, `nt`), `nivel` (`peques`, `media`, `experta`) y una `referencia` bíblica opcional.
+
+El `id` es `<prueba>-<número>` (`pregunta-120`, `mimica-37`…) y no se cambia nunca, ni al reordenar ni al borrar otras tarjetas: lo usan las partidas guardadas y el historial de cartas usadas. Una tarjeta nueva lleva el siguiente número libre, que muestra `npm run check:cards`; el número de una tarjeta borrada no se reutiliza.
 
 | Archivo | Campos |
 |---|---|
@@ -65,7 +67,7 @@ Criterios:
 
 Después de editar, ejecuta `npm run check:cards`.
 
-Si en un tema no quedan cartas sin usar para el nivel de la pareja, el juego saca una de otro tema del mismo nivel y el quesito cuenta igual.
+Si en un tema no quedan cartas sin usar para el nivel de la pareja, el juego saca una de otro tema del mismo nivel y el quesito cuenta igual. Cuando ya han salido todas las de esa prueba y nivel, el mazo vuelve a empezar y la carta lo avisa.
 
 ## El regalo
 

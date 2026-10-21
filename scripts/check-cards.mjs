@@ -1,4 +1,4 @@
-// Comprueba el banco de tarjetas: campos obligatorios, que la respuesta esté
+// Comprueba el banco de tarjetas: ids únicos, campos obligatorios, que la respuesta esté
 // entre las opciones y cuántas cartas hay en cada tema × prueba × nivel.
 import { readFileSync } from 'node:fs'
 
@@ -23,11 +23,20 @@ const normalizar = (s) =>
     .trim()
 
 const tabla = {}
+const ids = new Set()
+const siguienteId = {}
 for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
   const cartas = JSON.parse(readFileSync(new URL(`../src/data/${archivo}.json`, import.meta.url), 'utf8'))
   const vistas = new Set()
+  let mayor = -1
   cartas.forEach((c, i) => {
     const donde = `${archivo}.json #${i}`
+    // El id no se cambia nunca: lo usan las partidas guardadas y el historial de cartas usadas.
+    const numero = typeof c.id === 'string' && c.id.match(new RegExp(`^${prueba}-(\\d+)$`))
+    if (!numero) fallo(`${donde}: el id debe ser «${prueba}-<número>» (ahora: ${JSON.stringify(c.id)})`)
+    else mayor = Math.max(mayor, Number(numero[1]))
+    if (ids.has(c.id)) fallo(`${donde}: id repetido «${c.id}»`)
+    ids.add(c.id)
     if (!TEMAS.includes(c.tema)) fallo(`${donde}: tema "${c.tema}" no válido`)
     if (!NIVELES.includes(c.nivel)) fallo(`${donde}: nivel "${c.nivel}" no válido`)
     const texto = c.pregunta ?? c.palabra ?? c.adivinar
@@ -70,6 +79,7 @@ for (const [prueba, archivo] of Object.entries(ARCHIVOS)) {
     const clave = `${c.tema}|${prueba}|${c.nivel}`
     tabla[clave] = (tabla[clave] ?? 0) + 1
   })
+  siguienteId[prueba] = `${prueba}-${mayor + 1}`
 }
 
 console.log('\nCartas por tema, prueba y nivel (peques / media / experta):\n')
@@ -82,6 +92,7 @@ for (const tema of TEMAS) {
 }
 const total = Object.values(tabla).reduce((a, b) => a + b, 0)
 console.log(`\nTotal: ${total} cartas`)
+console.log(`Siguientes ids libres: ${Object.values(siguienteId).join(', ')}`)
 if (errores) {
   console.error(`\n${errores} problema(s)`)
   process.exit(1)

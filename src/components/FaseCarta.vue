@@ -305,6 +305,9 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       <p v-if="store.partida?.cartaDeOtroTema" class="nota">
         No quedaban cartas de este tema para vuestro nivel, así que sale una de otro. El quesito cuenta igual.
       </p>
+      <p v-if="store.partida?.mazoReiniciado" class="nota">
+        Ya habían salido todas las cartas de esta prueba para vuestro nivel: el mazo vuelve a empezar.
+      </p>
     </div>
   </section>
 </template>
