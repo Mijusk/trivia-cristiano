@@ -1,9 +1,9 @@
 import type { Casilla, CasillaKey, Fase, Pareja, Partida } from '../types'
-import { MODOS, NIVELES, PRUEBAS, TEMAS, TEMAS_BIBLICOS, TIEMPOS_POR_DEFECTO, ordenarTemas } from './config'
+import { DIBUJAR_EN, MODOS, NIVELES, PRUEBAS, TEMAS, TEMAS_BIBLICOS, TIEMPOS_POR_DEFECTO, ordenarTemas } from './config'
 import { cartaPermitida, cartaPorId, existeCarta } from './mazo'
 import { haGanado } from './reglas'
 
-export const VERSION_PARTIDA = 3
+export const VERSION_PARTIDA = 4
 
 const FASES: Fase[] = ['turno', 'carta', 'resultado', 'victoria']
 
@@ -44,7 +44,12 @@ function migrarV2(datos: Objeto): Objeto {
   return { ...datos, version: 3, temas: [...TEMAS_BIBLICOS], incluirCamino: false }
 }
 
-const MIGRACIONES: Record<number, (datos: Objeto) => Objeto> = { 1: migrarV1, 2: migrarV2 }
+/** v3 → v4: se puede dibujar en la pantalla. Las partidas de antes se dibujaban en papel. */
+function migrarV3(datos: Objeto): Objeto {
+  return { ...datos, version: 4, dibujarEn: 'papel' }
+}
+
+const MIGRACIONES: Record<number, (datos: Objeto) => Objeto> = { 1: migrarV1, 2: migrarV2, 3: migrarV3 }
 
 /**
  * Convierte lo que haya guardado en una partida válida de la versión actual,
@@ -77,6 +82,7 @@ export function leerPartida(datos: unknown): Partida | null {
     temas,
     // El Camino solo tiene sentido jugando con Vida Cristiana.
     incluirCamino: actual.incluirCamino === true && temas.includes('vida'),
+    dibujarEn: esUno(DIBUJAR_EN, actual.dibujarEn) ? actual.dibujarEn : 'papel',
     parejas: parejas as Pareja[],
     turno: Number.isInteger(actual.turno) && (actual.turno as number) >= 0 && (actual.turno as number) < parejas.length ? (actual.turno as number) : 0,
     casilla: esCasilla(actual.casilla) ? { tema: actual.casilla.tema, prueba: actual.casilla.prueba } : null,

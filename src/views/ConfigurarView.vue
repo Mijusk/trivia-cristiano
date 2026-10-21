@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import type { Modo, Nivel, Tema } from '../types'
-import { INFO_MODO, INFO_NIVEL, INFO_TEMA, MODOS, NIVELES, TEMAS, descripcionModo, ordenarTemas } from '../game/config'
+import type { DibujarEn, Modo, Nivel, Tema } from '../types'
+import {
+  DIBUJAR_EN,
+  INFO_DIBUJAR_EN,
+  INFO_MODO,
+  INFO_NIVEL,
+  INFO_TEMA,
+  MODOS,
+  NIVELES,
+  TEMAS,
+  descripcionModo,
+  ordenarTemas,
+} from '../game/config'
 import { usePartidaStore } from '../stores/partida'
 
 const store = usePartidaStore()
@@ -17,6 +28,7 @@ const parejas = reactive<{ nombre: string; nivel: Nivel }[]>(
   ],
 )
 const modo = ref<Modo>(store.partida?.modo ?? 'corta')
+const dibujarEn = ref<DibujarEn>(store.partida?.dibujarEn ?? 'papel')
 
 // Todos los temas marcados por defecto; en la revancha, los de la partida anterior.
 const temas = ref<Tema[]>([...(store.partida?.temas ?? TEMAS)])
@@ -39,6 +51,7 @@ function empezar() {
   store.nuevaPartida(parejas, modo.value, {
     temas: elegidos,
     incluirCamino: incluirCamino.value && elegidos.includes('vida'),
+    dibujarEn: dibujarEn.value,
   })
 }
 </script>
@@ -140,6 +153,19 @@ function empezar() {
           <input v-model="modo" type="radio" name="modo" :value="m" class="visualmente-oculto" />
           <strong>{{ INFO_MODO[m].nombre }}</strong>
           <span>{{ descripcionModo(m, temas.length) }}</span>
+        </label>
+      </fieldset>
+    </section>
+
+    <section aria-labelledby="titulo-dibujar">
+      <h2 id="titulo-dibujar">Dibujar</h2>
+      <p class="ayuda">Dónde se dibuja en la prueba de dibujar. En cada carta se puede cambiar solo para ese turno.</p>
+      <fieldset class="modos">
+        <legend class="visualmente-oculto">Dónde se dibuja</legend>
+        <label v-for="d in DIBUJAR_EN" :key="d" class="modo" :class="{ activo: dibujarEn === d }">
+          <input v-model="dibujarEn" type="radio" name="dibujar-en" :value="d" class="visualmente-oculto" />
+          <strong>{{ INFO_DIBUJAR_EN[d].nombre }}</strong>
+          <span>{{ INFO_DIBUJAR_EN[d].descripcion }}</span>
         </label>
       </fieldset>
     </section>

@@ -15,6 +15,8 @@ import { useTemporizador } from '../composables/useTemporizador'
 import { usePartidaStore } from '../stores/partida'
 import CartaTapada from './CartaTapada.vue'
 import Temporizador from './Temporizador.vue'
+import Pizarra from './Pizarra.vue'
+import { dibujoVacio, hayDibujo, type Dibujo } from '../game/pizarra'
 import { sonido } from '../audio/sonido'
 
 const store = usePartidaStore()
@@ -141,6 +143,7 @@ function pedirPista() {
 }
 
 function resolver(acertada: boolean) {
+  if (pizarraAbierta.value && hayDibujo(dibujo.value)) store.guardarDibujo(dibujo.value)
   store.resolver(acertada)
   if (store.partida?.fase === 'victoria') sonido.victoria()
   else if (acertada) sonido.acierto()
@@ -163,16 +166,31 @@ const trozosDibujo = computed(() =>
   carta.value.prueba === 'dibujar' ? resaltarClaves(carta.value.adivinar, carta.value.claves) : [],
 )
 
+/*
+ * Dibujar en la pantalla: quien dibuja mira la carta tapada y, cuando empieza el reloj, la
+ * pantalla se convierte en la pizarra. En cada carta se puede cambiar a papel (o al revés).
+ */
+const esDibujar = computed(() => carta.value.prueba === 'dibujar')
+const enPantalla = computed(() => store.dibujarAhora === 'pantalla')
+const pizarraAbierta = computed(() => esDibujar.value && enPantalla.value && (reloj.enMarcha.value || reloj.terminado.value))
+const dibujo = ref<Dibujo>(dibujoVacio())
+/** Quien dibuja vuelve a mirar la carta mientras mantiene pulsado «Ver carta». */
+const mirando = ref(false)
+
 const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describir', mimica: 'hacer la mímica' }
 </script>
 
 <template>
-  <section class="fase-carta" :style="{ '--color-tema': colorTema }">
+  <section class="fase-carta" :class="{ 'con-pizarra': pizarraAbierta }" :style="{ '--color-tema': colorTema }">
     <header class="cabecera">
       <span class="icono" aria-hidden="true">{{ prueba.icono }}</span>
       <div class="titulos">
         <h1>{{ prueba.nombre }}</h1>
-        <p class="tema">
+        <!-- Con la pizarra, el tipo va aquí arriba para dejarle todo el sitio al dibujo -->
+        <p v-if="pizarraAbierta && carta.prueba === 'dibujar' && carta.tipo" class="tema tipo-cabecera">
+          Es {{ TEXTO_TIPO[carta.tipo] }}
+        </p>
+        <p v-else class="tema">
           {{ INFO_TEMA[casilla.tema].nombre }}<template v-if="carta.camino"> · Camino Neocatecumenal</template>
         </p>
       </div>
@@ -212,11 +230,31 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
       </article>
     </template>
 
+    <!-- Dibujar en la pantalla, con el reloj ya en marcha -->
+    <template v-else-if="pizarraAbierta && carta.prueba === 'dibujar'">
+      <p v-if="pistaUsada" class="pista-texto"><span class="etiqueta-pista">Pista</span> {{ carta.pista }}</p>
+      <Pizarra v-model="dibujo" :bloqueada="reloj.terminado.value">
+        <div v-if="mirando" class="mirar-carta">
+          <strong class="palabra dibujo">
+            <template v-for="(t, i) in trozosDibujo" :key="i">
+              <mark v-if="t.clave" class="clave">{{ t.texto }}</mark>
+              <span v-else class="relleno">{{ t.texto }}</span>
+            </template>
+          </strong>
+          <span v-if="carta.escena" class="escena">Dibuja: {{ carta.escena }}</span>
+        </div>
+        <p v-else-if="reloj.terminado.value" class="fin-pizarra">Se acabó el tiempo</p>
+      </Pizarra>
+    </template>
+
     <!-- Dibujar, describir y mímica: solo la ve quien actúa -->
     <template v-else>
       <p class="instruccion">
         Pasa el móvil a quien va a {{ verbo[carta.prueba] }}. {{ prueba.instruccion }}
-        <template v-if="carta.prueba === 'dibujar'">Tu pareja tiene que decir las palabras resaltadas.</template>
+        <template v-if="carta.prueba === 'dibujar'">
+          Tu pareja tiene que decir las palabras resaltadas.
+          <template v-if="enPantalla">Cuando empiece el tiempo, la pantalla se convierte en una pizarra.</template>
+        </template>
         <template v-else>Tu pareja tiene que decir lo que pone en grande.</template>
       </p>
       <CartaTapada :color="colorTema" @vista="verla">
@@ -257,11 +295,19 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
         <span class="etiqueta-pista">Pista</span> {{ carta.pista }}
       </p>
       <p v-if="pistaUsada && esDescribir" class="nota-ideas">Las ideas salen dentro de la carta: mantenla pulsada.</p>
+      <button
+        v-if="esDibujar"
+        type="button"
+        class="btn-texto donde-dibujar"
+        @click="store.cambiarDibujarEn(enPantalla ? 'papel' : 'pantalla')"
+      >
+        {{ enPantalla ? '✏️ Esta vez, en papel' : '📱 Esta vez, en la pantalla' }}
+      </button>
     </template>
 
     <div class="acciones">
       <!-- Ayudas, justo encima del botón principal -->
-      <div v-if="pistaDisponible || puedeCambiar" class="chips">
+      <div v-if="pistaDisponible || puedeCambiar || pizarraAbierta" class="chips" :class="{ compactos: pizarraAbierta }">
         <button v-if="pistaDisponible" type="button" class="chip" @click="pedirPista">
           <span aria-hidden="true">💡</span> {{ textoBotonPista }}
           <small v-if="costePista > 0">−{{ costePista }} s</small>
@@ -270,6 +316,20 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
           <span aria-hidden="true">🔄</span> Cambiar carta
           <small v-if="conVentana">−{{ costeCambio }} s · quedan {{ quedaParaCambiar }} s</small>
           <small v-else>1 por turno</small>
+        </button>
+        <button
+          v-if="pizarraAbierta"
+          type="button"
+          class="chip"
+          @pointerdown.prevent="mirando = true"
+          @pointerup="mirando = false"
+          @pointerleave="mirando = false"
+          @pointercancel="mirando = false"
+          @keydown.space.prevent="mirando = true"
+          @keyup.space="mirando = false"
+          @contextmenu.prevent
+        >
+          <span aria-hidden="true">👁️</span> Ver carta <small class="solo-alto">mantén pulsado</small>
         </button>
       </div>
 
@@ -304,10 +364,10 @@ const verbo: Record<string, string> = { dibujar: 'dibujar', describir: 'describi
         <button class="btn btn-acierto" @click="resolver(true)">{{ esPregunta ? 'Acertada' : '¡Adivinado!' }}</button>
       </div>
 
-      <p v-if="store.partida?.cartaDeOtroTema" class="nota">
+      <p v-if="store.partida?.cartaDeOtroTema && !pizarraAbierta" class="nota">
         No quedaban cartas de este tema para vuestro nivel, así que sale una de otro. El quesito cuenta igual.
       </p>
-      <p v-if="store.partida?.mazoReiniciado" class="nota">
+      <p v-if="store.partida?.mazoReiniciado && !pizarraAbierta" class="nota">
         Ya habían salido todas las cartas de esta prueba para vuestro nivel: el mazo vuelve a empezar.
       </p>
     </div>
@@ -627,6 +687,86 @@ h1 {
   color: #b3262b;
   font-weight: 700;
   text-decoration: line-through;
+}
+
+.donde-dibujar {
+  align-self: center;
+  margin-top: -6px;
+  font-size: 0.95rem;
+}
+
+/* Encima de la pizarra, quien dibuja vuelve a ver la carta mientras mantiene pulsado */
+.mirar-carta {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  padding: 20px;
+  background: var(--carta);
+  color: var(--tinta);
+  text-align: center;
+  border-top: 10px solid var(--color-tema);
+}
+
+.fin-pizarra {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--fallo);
+  color: #fff;
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.compactos .chip {
+  flex: 1 1 96px;
+  min-height: 40px;
+  padding: 4px 10px;
+  font-size: 0.88rem;
+}
+
+.tipo-cabecera {
+  color: var(--sobre-mesa);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* En móviles bajos, con la pizarra, todo un poco más pequeño para que el dibujo tenga sitio */
+@media (max-height: 760px) {
+  .con-pizarra .cabecera .icono {
+    width: 42px;
+    height: 42px;
+    font-size: 1.5rem;
+  }
+
+  .con-pizarra h1 {
+    font-size: 1.4rem;
+  }
+
+  .con-pizarra .cabecera .reloj :deep(.temporizador) {
+    width: 60px;
+    height: 60px;
+  }
+
+  .con-pizarra .cabecera .reloj :deep(.numero) {
+    font-size: 1.3rem;
+  }
+
+  .con-pizarra .acciones-fila .btn {
+    min-height: 48px;
+  }
+
+  .solo-alto {
+    display: none;
+  }
 }
 
 .nota {

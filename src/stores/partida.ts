@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import type { Casilla, Modo, Nivel, Partida, Tema } from '../types'
+import type { Casilla, DibujarEn, Modo, Nivel, Partida, Tema } from '../types'
 import { TEMAS, TIEMPOS_POR_DEFECTO, ordenarTemas } from '../game/config'
 import { cartaPorId, sacarCarta } from '../game/mazo'
 import { VERSION_PARTIDA, leerPartida, limpiarUsadas } from '../game/guardado'
 import { casillasPendientes, claveCasilla, haGanado } from '../game/reglas'
+import type { Dibujo } from '../game/pizarra'
 
 // La clave no cambia entre versiones para no perder partidas: la versión va dentro (game/guardado.ts).
 const CLAVE_GUARDADO = 'trivia-cristiano/partida/v1'
@@ -45,6 +46,19 @@ export const usePartidaStore = defineStore('partida', () => {
 
   watch(partida, guardar, { deep: true })
 
+  /*
+   * Lo que solo dura el turno y no se guarda: si en esta carta se dibuja en otro sitio que el
+   * elegido para la partida, y el dibujo de la pizarra para verlo en el resultado.
+   */
+  const dibujarEnTurno = ref<DibujarEn | null>(null)
+  const dibujo = ref<Dibujo | null>(null)
+  const dibujarAhora = computed<DibujarEn>(() => dibujarEnTurno.value ?? partida.value?.dibujarEn ?? 'papel')
+
+  function limpiarTurno() {
+    dibujarEnTurno.value = null
+    dibujo.value = null
+  }
+
   const parejaActual = computed(() => (partida.value ? partida.value.parejas[partida.value.turno] : null))
   const carta = computed(() => cartaPorId(partida.value?.cartaId ?? null))
   const pendientes = computed(() =>
@@ -69,8 +83,13 @@ export const usePartidaStore = defineStore('partida', () => {
   function nuevaPartida(
     parejas: { nombre: string; nivel: Nivel }[],
     modo: Modo,
-    { temas = TEMAS, incluirCamino = false }: { temas?: Tema[]; incluirCamino?: boolean } = {},
+    {
+      temas = TEMAS,
+      incluirCamino = false,
+      dibujarEn = 'papel',
+    }: { temas?: Tema[]; incluirCamino?: boolean; dibujarEn?: DibujarEn } = {},
   ) {
+    limpiarTurno()
     const elegidos = ordenarTemas(temas)
     const temasPartida = elegidos.length > 0 ? elegidos : [...TEMAS]
     partida.value = {
@@ -79,6 +98,7 @@ export const usePartidaStore = defineStore('partida', () => {
       modo,
       temas: temasPartida,
       incluirCamino: incluirCamino && temasPartida.includes('vida'),
+      dibujarEn,
       parejas: parejas.map((p, i) => ({
         id: `p${i}-${Date.now().toString(36)}`,
         nombre: p.nombre.trim() || `Pareja ${i + 1}`,
@@ -111,6 +131,7 @@ export const usePartidaStore = defineStore('partida', () => {
     })
     p.casilla = casilla
     p.cartaId = sacada.carta.id
+    dibujo.value = null
     p.cartaDeOtroTema = sacada.deOtroTema
     p.mazoReiniciado = sacada.reiniciado
     p.usadas = sacada.usadas
@@ -134,6 +155,15 @@ export const usePartidaStore = defineStore('partida', () => {
     if (partida.value) partida.value.pistaUsada = true
   }
 
+  /** Dibujar en papel o en la pantalla solo en este turno, sin cambiar lo elegido para la partida. */
+  function cambiarDibujarEn(donde: DibujarEn) {
+    dibujarEnTurno.value = donde
+  }
+
+  function guardarDibujo(d: Dibujo | null) {
+    dibujo.value = d
+  }
+
   function resolver(acierto: boolean) {
     const p = partida.value
     const pareja = parejaActual.value
@@ -150,6 +180,7 @@ export const usePartidaStore = defineStore('partida', () => {
     const p = partida.value
     if (!p) return
     p.turno = (p.turno + 1) % p.parejas.length
+    limpiarTurno()
     p.casilla = null
     p.cartaId = null
     p.cartaDeOtroTema = false
@@ -179,11 +210,15 @@ export const usePartidaStore = defineStore('partida', () => {
     carta,
     pendientes,
     ganadora,
+    dibujarAhora,
+    dibujo,
     irA,
     nuevaPartida,
     jugarCasilla,
     otraCarta,
     usarPista,
+    cambiarDibujarEn,
+    guardarDibujo,
     resolver,
     siguienteTurno,
     terminar,

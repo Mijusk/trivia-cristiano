@@ -1,4 +1,4 @@
-import type { Modo, Nivel, Prueba, Tema, TipoCarta } from '../types'
+import type { DibujarEn, Modo, Nivel, Prueba, Tema, TipoCarta } from '../types'
 
 export const TEMAS: Tema[] = ['pentateuco', 'historicos', 'profetas', 'nt', 'vida']
 /** Los cuatro temas de la Biblia: con ellos se cargan las partidas guardadas antes de poder elegir. */
@@ -6,6 +6,7 @@ export const TEMAS_BIBLICOS: Tema[] = ['pentateuco', 'historicos', 'profetas', '
 export const PRUEBAS: Prueba[] = ['pregunta', 'dibujar', 'describir', 'mimica']
 export const NIVELES: Nivel[] = ['peques', 'media', 'experta']
 export const MODOS: Modo[] = ['corta', 'media', 'completa']
+export const DIBUJAR_EN: DibujarEn[] = ['papel', 'pantalla']
 
 export const INFO_TEMA: Record<Tema, { nombre: string; descripcion: string; color: string }> = {
   pentateuco: { nombre: 'Pentateuco', descripcion: 'Génesis – Deuteronomio', color: 'var(--tema-pentateuco)' },
@@ -26,7 +27,7 @@ export function ordenarTemas(lista: readonly unknown[]): Tema[] {
 
 export const INFO_PRUEBA: Record<Prueba, { nombre: string; icono: string; instruccion: string }> = {
   pregunta: { nombre: 'Pregunta', icono: '❓', instruccion: 'Responded entre los dos.' },
-  dibujar: { nombre: 'Dibujar', icono: '✏️', instruccion: 'Dibuja en papel sin letras ni números.' },
+  dibujar: { nombre: 'Dibujar', icono: '✏️', instruccion: 'Dibuja sin letras ni números.' },
   describir: { nombre: 'Describir', icono: '🗣️', instruccion: 'Descríbelo sin decir la palabra ni las prohibidas.' },
   mimica: { nombre: 'Mímica', icono: '🎭', instruccion: 'Imítalo sin hablar ni hacer sonidos.' },
 }
@@ -44,6 +45,11 @@ export const INFO_MODO: Record<Modo, { nombre: string }> = {
   corta: { nombre: 'Corta' },
   media: { nombre: 'Media' },
   completa: { nombre: 'Completa' },
+}
+
+export const INFO_DIBUJAR_EN: Record<DibujarEn, { nombre: string; descripcion: string }> = {
+  papel: { nombre: 'En papel', descripcion: 'Con papel y boli, como siempre.' },
+  pantalla: { nombre: 'En la pantalla', descripcion: 'Una pizarra en el móvil para dibujar con el dedo, con colores y goma.' },
 }
 
 /** Lo que dura cada modo jugando con los cuatro temas bíblicos; con más o menos temas se escala. */

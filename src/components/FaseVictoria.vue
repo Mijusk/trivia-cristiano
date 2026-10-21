@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { usePartidaStore } from '../stores/partida'
 import Quesera from './Quesera.vue'
 import AvisarCarta from './AvisarCarta.vue'
+import DibujoVista from './DibujoVista.vue'
 
 const store = usePartidaStore()
 const partida = computed(() => store.partida!)
@@ -24,6 +25,7 @@ function salir() {
       <Quesera :pareja="ganadora" :modo="partida.modo" :temas="partida.temas" :tamano="180" class="ficha" />
       <p class="gana">Ha ganado</p>
       <h1>{{ ganadora.nombre }}</h1>
+      <DibujoVista v-if="store.dibujo" :dibujo="store.dibujo" class="dibujo" :style="{ aspectRatio: `1 / ${store.dibujo.proporcion}` }" />
     </div>
     <div class="acciones">
       <button class="btn btn-principal btn-bloque" @click="revancha">Jugar otra vez</button>
@@ -63,6 +65,12 @@ function salir() {
 h1 {
   font-size: clamp(2.4rem, 12vw, 3.4rem);
   overflow-wrap: anywhere;
+}
+
+.dibujo {
+  height: min(24dvh, 220px);
+  max-width: 100%;
+  margin-top: 6px;
 }
 
 @keyframes gira {
